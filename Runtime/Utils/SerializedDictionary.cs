@@ -47,10 +47,10 @@ namespace SaveSystem.Utils
     public abstract class SerializedDictionary<K, V, SK, SV> : Dictionary<K, V>, ISerializationCallbackReceiver
     {
         [SerializeField]
-        List<SK> m_Keys = new List<SK>();
+        private List<SK> _keys = new();
 
         [SerializeField]
-        List<SV> m_Values = new List<SV>();
+        private List<SV> _values = new();
 
         /// <summary>
         /// From <see cref="K"/> to <see cref="SK"/>
@@ -86,13 +86,13 @@ namespace SaveSystem.Utils
         /// </summary>
         public void OnBeforeSerialize()
         {
-            m_Keys.Clear();
-            m_Values.Clear();
+            _keys.Clear();
+            _values.Clear();
 
             foreach (var kvp in this)
             {
-                m_Keys.Add(SerializeKey(kvp.Key));
-                m_Values.Add(SerializeValue(kvp.Value));
+                _keys.Add(SerializeKey(kvp.Key));
+                _values.Add(SerializeValue(kvp.Value));
             }
         }
 
@@ -104,19 +104,21 @@ namespace SaveSystem.Utils
             K deserializedKey;
             V deserializedValue;
 
-            for (int i = 0; i < m_Keys.Count; i++)
+            Clear();
+
+            for (int i = 0; i < _keys.Count; i++)
             {
-                deserializedKey = DeserializeKey(m_Keys[i]);
+                deserializedKey = DeserializeKey(_keys[i]);
 
                 if (deserializedKey == null) 
                     continue;
 
-                deserializedValue = DeserializeValue(deserializedKey, m_Values[i]);
+                deserializedValue = DeserializeValue(deserializedKey, _values[i]);
                 Add(deserializedKey, deserializedValue);
             }
 
-            m_Keys.Clear();
-            m_Values.Clear();
+            _keys.Clear();
+            _values.Clear();
         }
     } 
 }
