@@ -21,6 +21,9 @@ namespace SaveSystem.Misc
         public string JsonSavePath => Path.Combine(Application.persistentDataPath, _jsonSavePath);
         public int EncryptionKey => _jsonEncryptionKey;
 
+        public bool AutoSaveOnApplicationQuit => _autoSaveOnApplicationQuit;
+        public bool AutoSaveOnApplicationLostFocus => _autoSaveOnApplicationLostFocus;
+
 
 #if UNITY_EDITOR
         [SerializeField]
@@ -36,6 +39,12 @@ namespace SaveSystem.Misc
         private string _jsonSavePath = "Data";
         [SerializeField]
         private int _jsonEncryptionKey = 8976;
+
+        [Space]
+        [SerializeField]
+        private bool _autoSaveOnApplicationQuit = true;
+        [SerializeField]
+        private bool _autoSaveOnApplicationLostFocus = true;
     }
 }
 
