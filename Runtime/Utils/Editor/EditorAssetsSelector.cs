@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace SaveSystem.Utils.Editor
 {
-    public static class EditorAssetsSelector
+    internal static class EditorAssetsSelector
     {
         [MenuItem(SaveSystemConstants.MENU_ITEM_NAME + "Select Settings", secondaryPriority = 100)]
         public static void SelectSettingsAsset()

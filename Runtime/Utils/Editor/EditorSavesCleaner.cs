@@ -5,7 +5,7 @@ using UnityEditor;
 
 namespace SaveSystem.Utils.Editor
 {
-    public static class EditorSavesCleaner
+    internal static class EditorSavesCleaner
     {
         [MenuItem(SaveSystemConstants.MENU_ITEM_NAME + "Clear All Saves")]
         public static void ClearAllSaves()
