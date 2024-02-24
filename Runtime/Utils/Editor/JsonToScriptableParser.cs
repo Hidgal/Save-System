@@ -23,7 +23,9 @@ namespace SaveSystem.Utils.Editor
                 if(result != null)
                 {
                     dataAsset.SaveData(result);
-                    UnityEngine.Debug.Log($"Successfully parsed data from {Path.GetFileName(pathToFile)}");
+                    AssetDatabase.SaveAssetIfDirty(dataAsset);
+
+                    UnityEngine.Debug.Log($"Successfully loaded data from {Path.GetFileName(pathToFile)}");
                 }
             }
         }
