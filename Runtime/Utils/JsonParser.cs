@@ -1,9 +1,9 @@
 using SaveSystem.Misc;
 using UnityEngine;
 
-namespace SaveSystem.Internal
+namespace SaveSystem.Utils
 {
-    internal class JsonParser
+    public class JsonParser
     {
         private readonly SaveSystemSettings _settings;
 

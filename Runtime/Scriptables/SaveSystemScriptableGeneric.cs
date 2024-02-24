@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace SaveSystem.Internal.Scriptables
+namespace SaveSystem.Scriptables
 {
-    internal abstract class SaveSystemScriptableGeneric<T> : ScriptableObject where T : SaveData
+    public abstract class SaveSystemScriptableGeneric<T> : ScriptableObject where T : SaveData
     {
         public T Data => _saveData;
 

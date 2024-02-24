@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using SaveSystem.Internal;
 using SaveSystem.Misc;
 using SaveSystem.Zenject;
 using UnityEditor;
@@ -10,7 +9,7 @@ using UnityEngine;
 
 namespace SaveSystem.Utils.Editor
 {
-    internal static class SaveSystemAssetUtils
+    public static class SaveSystemAssetUtils
     {
         public static void SelectAssetOfType<T>() where T : UnityEngine.Object
         {

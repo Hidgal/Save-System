@@ -4,6 +4,7 @@ namespace SaveSystem.Internal
     {
         public const string GLOBAL_DATA_KEY = "GlobalData";
         public const string PROFILE_KEY = "CurrentProfile";
+        public const string FILE_EXTENSION = ".json";
 
 #if UNITY_EDITOR
         /// <summary>

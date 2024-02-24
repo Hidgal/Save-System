@@ -1,24 +1,23 @@
 using System;
 using System.IO;
 using SaveSystem.Misc;
+using SaveSystem.Utils;
 using UnityEngine;
 
 namespace SaveSystem.Internal.SaveLoaders
 {
     internal class JsonDataSaveLoader : DataSaveLoader
     {
-        private readonly string _fileExtension;
         private readonly JsonParser _parser;
 
         public JsonDataSaveLoader(SaveSystemSettings settings) : base(settings)
         {
-            _fileExtension = Settings.FileExtension.Contains(".") ? Settings.FileExtension : $".{Settings.FileExtension}";
             _parser = new(settings);
         }
 
         internal override SaveData LoadData(string key)
         {
-            var pathToFile = Path.Combine(Settings.JsonSavePath, key + _fileExtension);
+            var pathToFile = Path.Combine(Settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
 
             SaveData data;
 
@@ -51,7 +50,7 @@ namespace SaveSystem.Internal.SaveLoaders
         {
             CreateFolderIfNotExists(Settings.JsonSavePath);
 
-            var pathToFile = Path.Combine(Settings.JsonSavePath, key + _fileExtension);
+            var pathToFile = Path.Combine(Settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
             string parsedData = _parser.ToJson(data);
 
             File.WriteAllText(pathToFile, parsedData);
@@ -61,7 +60,7 @@ namespace SaveSystem.Internal.SaveLoaders
         {
             if (!Directory.Exists(Settings.JsonSavePath)) return;
 
-            var pathToFile = Path.Combine(Settings.JsonSavePath, key + _fileExtension);
+            var pathToFile = Path.Combine(Settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
             if (!File.Exists(pathToFile)) return;
 
             File.Delete(pathToFile);

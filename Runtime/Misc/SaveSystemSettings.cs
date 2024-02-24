@@ -20,7 +20,6 @@ namespace SaveSystem.Misc
 
         public string DefaultProfileName => _defaultProfileName;
 
-        public string FileExtension => _jsonFileExtension;
         /// <summary>
         /// Full path to saves folder including path to data storage
         /// </summary>
@@ -52,8 +51,6 @@ namespace SaveSystem.Misc
         private bool _useDaataEncryption = true;
         [SerializeField]
         private int _jsonEncryptionKey = 8976;
-        [SerializeField]
-        private string _jsonFileExtension = ".json";
 
         [Space]
         [SerializeField]
