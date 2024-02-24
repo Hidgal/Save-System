@@ -1,19 +1,16 @@
 #if UNITY_EDITOR
 using System.IO;
-using System.Linq;
 using SaveSystem.Internal;
-using SaveSystem.Misc;
-using SaveSystem.Zenject;
 using UnityEditor;
 
-namespace SaveSystem.Utils
+namespace SaveSystem.Utils.Editor
 {
     public static class EditorSavesCleaner
     {
-        [MenuItem("Tools/" + SaveSystemConstants.MENU_ITEM_NAME + "/Clear All Saves")]
+        [MenuItem(SaveSystemConstants.MENU_ITEM_NAME + "Clear All Saves")]
         public static void ClearAllSaves()
         {
-            var settings = GetSettings();
+            var settings = SaveSystemAssetUtils.GetSettings();
             if (settings == null) return;
 
             bool hasDeletedData = ClearDirectory(settings.ScriptableSavesPath);
@@ -49,23 +46,6 @@ namespace SaveSystem.Utils
             }
 
             return false;
-        }
-
-        private static SaveSystemSettings GetSettings()
-        {
-            //TODO: add zenject define
-            var installerAssetGuid = AssetDatabase.FindAssets($"t:{nameof(SaveSystemInstaller)}").FirstOrDefault();
-            if (installerAssetGuid != null && installerAssetGuid.Length > 0)
-            {
-                var path = AssetDatabase.GUIDToAssetPath(installerAssetGuid);
-                var installer = AssetDatabase.LoadAssetAtPath<SaveSystemInstaller>(path);
-                if (installer)
-                {
-                    return installer.Settings;
-                }
-            }
-
-            return null;
         }
     }
 }

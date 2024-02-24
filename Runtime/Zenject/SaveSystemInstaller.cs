@@ -1,3 +1,4 @@
+//#if SAVE_SYSTEM_ZENJECT
 using SaveSystem.Internal;
 using SaveSystem.Misc;
 using UnityEngine;
@@ -18,5 +19,6 @@ namespace SaveSystem.Zenject
             Container.BindInterfacesTo<SaveSystemLogic>().AsSingle().WithArguments(_settings);
         }
     }
-}
+} 
+//#endif
 

@@ -26,8 +26,6 @@ namespace SaveSystem.Internal.SaveLoaders
                     dataAsset.SaveData(new());
                 }
 
-                dataAsset.Data.Initialize(() => SaveData(key, dataAsset.Data), () => ClearData(key));
-
                 return dataAsset.Data;
             }
 

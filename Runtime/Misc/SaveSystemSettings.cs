@@ -15,10 +15,17 @@ namespace SaveSystem.Misc
         /// <summary>
         /// Editor only! Relative path to saves folder. Starting from Assets
         /// </summary>
-        public string ScriptableSavesRelativePath => Path.Combine("Assets", _scriptableSavesPath); 
+        public string ScriptableSavesRelativePath => Path.Combine("Assets", _scriptableSavesPath);
 #endif
 
+        public string DefaultProfileName => _defaultProfileName;
+
+        public string FileExtension => _jsonFileExtension;
+        /// <summary>
+        /// Full path to saves folder including path to data storage
+        /// </summary>
         public string JsonSavePath => Path.Combine(Application.persistentDataPath, _jsonSavePath);
+        public bool UseEncryption => _useDaataEncryption;
         public int EncryptionKey => _jsonEncryptionKey;
 
         public bool AutoSaveOnApplicationQuit => _autoSaveOnApplicationQuit;
@@ -30,15 +37,23 @@ namespace SaveSystem.Misc
         private bool _useScriptableSavesInEditor = true;
         [SerializeField]
         [Tooltip("Relative to the Assets folder")]
-        private string _scriptableSavesPath = "Saves"; 
+        private string _scriptableSavesPath = "Saves";
 #endif
+
+        [Space]
+        [SerializeField]
+        private string _defaultProfileName = "Default Profile";
 
         [Space]
         [SerializeField]
         [Tooltip("Relative to the App data folder")]
         private string _jsonSavePath = "Data";
         [SerializeField]
+        private bool _useDaataEncryption = true;
+        [SerializeField]
         private int _jsonEncryptionKey = 8976;
+        [SerializeField]
+        private string _jsonFileExtension = ".json";
 
         [Space]
         [SerializeField]

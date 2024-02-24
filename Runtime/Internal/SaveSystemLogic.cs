@@ -21,8 +21,8 @@ namespace SaveSystem.Internal
                 }
                 else
                 {
-                    GlobalData.SaveStringValue(SaveSystemConstants.PROFILE_KEY, SaveSystemConstants.DEFAULT_PROFILE_NAME);
-                    return SaveSystemConstants.DEFAULT_PROFILE_NAME;
+                    GlobalData.SaveStringValue(SaveSystemConstants.PROFILE_KEY, _settings.DefaultProfileName);
+                    return _settings.DefaultProfileName;
                 }
             }
 
@@ -37,10 +37,12 @@ namespace SaveSystem.Internal
         private Dictionary<string, SaveData> _profileDatas;
         private DataSaveLoader _saveLoader;
         private SaveData _globalData;
+        private SaveSystemSettings _settings;
 
         public SaveSystemLogic(SaveSystemSettings settings)
         {
             _profileDatas = new();
+            _settings = settings;
             CreateDataSaveLoader(settings);
         }
 
@@ -93,6 +95,8 @@ namespace SaveSystem.Internal
             { 
                 var data = _saveLoader.LoadData(profileName);
                 _profileDatas.Add(profileName, data);
+
+                InitializeData(_profileDatas[profileName], profileName);
             }
             
             return _profileDatas[profileName];
@@ -114,9 +118,15 @@ namespace SaveSystem.Internal
             if(_globalData == null)
             {
                 _globalData = _saveLoader.LoadData(SaveSystemConstants.GLOBAL_DATA_KEY);
+                InitializeData(_globalData, SaveSystemConstants.GLOBAL_DATA_KEY);
             }
 
             return _globalData;
+        }
+
+        private void InitializeData(SaveData data, string key)
+        {
+            data.Initialize(() => _saveLoader.SaveData(key, data), () => _saveLoader.ClearData(key));
         }
 
         private void CreateDataSaveLoader(SaveSystemSettings settings)
