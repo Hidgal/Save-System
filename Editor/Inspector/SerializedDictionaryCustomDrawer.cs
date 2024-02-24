@@ -26,12 +26,18 @@ namespace SaveSystem.Editor.Inspector
         private const string KEYS_LIST_NAME = "_keys";
         private const string VALUES_LIST_NAME = "_values";
 
-        private static float _rectVerticalOffset = EditorGUIUtility.singleLineHeight / 2;
+        private static float _rectVerticalOffset = EditorGUIUtility.standardVerticalSpacing;
+        private static float _fieldVerticalOffset = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+        private static float _indentOffset = EditorGUIUtility.singleLineHeight / 2;
         private static float _minimalHeight = 2 * EditorGUIUtility.singleLineHeight;
-        private static Color _backgroundColor = new Color(0.2075472f, 0.2075472f, 0.2075472f, 1);
+
+        private static Color _headerColor = new Color(0.2075472f, 0.2075472f, 0.2075472f, 1);
+        private static Color _backgroundColor = new Color(0.15f, 0.15f, 0.15f, 1);
+        private static Color _fieldColor = new Color(0.22f, 0.22f, 0.22f, 1);
 
         private bool _isExpanded = false;
         private float _propertyHeight;
+        private string _searchString = string.Empty;
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
@@ -47,19 +53,14 @@ namespace SaveSystem.Editor.Inspector
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var headerPos = position;
-            headerPos.height = EditorGUIUtility.singleLineHeight;
+            _propertyHeight = _minimalHeight;
 
-            var backRect = position;
-            
-            if(_isExpanded)
-                backRect.height += _rectVerticalOffset;
-
-            EditorGUI.DrawRect(backRect, _backgroundColor);
-
-            EditorGUI.BeginProperty(headerPos, label, property);
+            var headerRect = position;
+            headerRect.height = EditorGUIUtility.singleLineHeight;
+            EditorGUI.BeginProperty(headerRect, label, property);
             {
-                _isExpanded = EditorGUI.Foldout(headerPos, _isExpanded, label, true);
+                EditorGUI.DrawRect(headerRect, _headerColor);
+                _isExpanded = EditorGUI.Foldout(headerRect, _isExpanded, label, true);
             }
             EditorGUI.EndProperty();
 
@@ -67,39 +68,82 @@ namespace SaveSystem.Editor.Inspector
             {
                 var keysProperty = property.FindPropertyRelative(KEYS_LIST_NAME);
                 var valuesProperty = property.FindPropertyRelative(VALUES_LIST_NAME);
+                _propertyHeight = (keysProperty.arraySize + 2) * EditorGUIUtility.singleLineHeight + _rectVerticalOffset * 2;
 
-                _propertyHeight = Mathf.Max(keysProperty.arraySize * EditorGUIUtility.singleLineHeight, _minimalHeight);
+                var contentRect = position;
+                contentRect.y += _fieldVerticalOffset;
+                contentRect.x += _indentOffset;
+                contentRect.width -= _indentOffset;
+                contentRect.height = _propertyHeight + _rectVerticalOffset - EditorGUIUtility.singleLineHeight;
+
+                EditorGUI.DrawRect(contentRect, _backgroundColor);
 
                 if (keysProperty.arraySize == 0)
                 {
-                    var labelRect = position;
+                    var labelRect = contentRect;
                     labelRect.height = EditorGUIUtility.singleLineHeight;
-                    labelRect.y += EditorGUIUtility.singleLineHeight;
+                    labelRect.y += EditorGUIUtility.standardVerticalSpacing;
                     EditorGUI.LabelField(labelRect, "No saved data");
+                    
+                    return;
                 }
 
-                var keyRect = position;
-                keyRect.height = EditorGUIUtility.singleLineHeight;
-                keyRect.width = position.width * KEYS_SECTION_PERCENT;
+                var searchPosition = contentRect;
+                searchPosition.y += EditorGUIUtility.standardVerticalSpacing;
+                searchPosition.height = EditorGUIUtility.singleLineHeight;
+                _searchString = EditorGUI.TextField(searchPosition, "", _searchString);
+                if(_searchString.Length == 0 || _searchString.Equals(string.Empty))
+                {
+                    var style = new GUIStyle(GUI.skin.label);
+                    style.fontStyle = FontStyle.Italic;
+                    style.normal.textColor = Color.gray;
+                    EditorGUI.LabelField(searchPosition, "Search...", style);
+                }
 
-                var valueRect = position;
+                var keyRect = contentRect;
+                keyRect.x += _indentOffset;
+                keyRect.y += EditorGUIUtility.standardVerticalSpacing;
+                keyRect.height = EditorGUIUtility.singleLineHeight;
+                keyRect.width *= KEYS_SECTION_PERCENT;
+                keyRect.width -= _indentOffset;
+
+                var valueRect = contentRect;
                 valueRect.height = EditorGUIUtility.singleLineHeight;
-                valueRect.width = position.width * VALUES_SECTION_PERCENT;
-                valueRect.x += keyRect.width;
+                valueRect.width *= VALUES_SECTION_PERCENT;
+                valueRect.width -= _indentOffset;
+                valueRect.x += keyRect.width + _indentOffset;
+                valueRect.y += EditorGUIUtility.standardVerticalSpacing;
+
+                var fieldRect = contentRect;
+                fieldRect.height = EditorGUIUtility.singleLineHeight;
+                fieldRect.width -= _indentOffset * 2;
+                fieldRect.x += _indentOffset * 2;
+                fieldRect.y += EditorGUIUtility.standardVerticalSpacing;
 
                 string keyLabel;
+                SerializedProperty valueProperty;
+                var valueLabel = new GUIContent();
 
                 for (int i = 0; i < keysProperty.arraySize; i++)
                 {
-                    keyRect.y += EditorGUIUtility.singleLineHeight;
-                    valueRect.y += EditorGUIUtility.singleLineHeight;
-
                     keyLabel = keysProperty.GetArrayElementAtIndex(i).stringValue;
-                    EditorGUI.LabelField(keyRect, keyLabel);
+                    valueProperty = valuesProperty.GetArrayElementAtIndex(i);
 
-                    var valueProperty = valuesProperty.GetArrayElementAtIndex(i);
-                    var valueLabel = new GUIContent();
+                    if (!_searchString.Equals(string.Empty))
+                    {
+                        if (!IsSuitableForSearch(keyLabel) && !IsSuitableForSearch(valueProperty.stringValue))
+                        {
+                            continue;
+                        }
+                    }
 
+                    keyRect.y += _fieldVerticalOffset;
+                    valueRect.y += _fieldVerticalOffset;
+                    fieldRect.y += _fieldVerticalOffset;
+
+                    EditorGUI.DrawRect(fieldRect, _fieldColor);
+
+                    EditorGUI.LabelField(keyRect, keyLabel);                                    
                     EditorGUI.BeginProperty(valueRect, valueLabel, property);
                     {
                         EditorGUI.PropertyField(valueRect, valueProperty, valueLabel);
@@ -107,6 +151,11 @@ namespace SaveSystem.Editor.Inspector
                     EditorGUI.EndProperty();
                 }
             }
+        }
+
+        private bool IsSuitableForSearch(string value)
+        {
+            return value.Contains(_searchString, System.StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

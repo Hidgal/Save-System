@@ -10,12 +10,20 @@ namespace SaveSystem
     {
         [SerializeField]
         private SerializedDictionary<string, int> _intValues = new();
+        
+        [Space]
         [SerializeField]
         private SerializedDictionary<string, bool> _boolValues = new();
+
+        [Space]
         [SerializeField]
         private SerializedDictionary<string, float> _floatValues = new();
+
+        [Space]
         [SerializeField]
         private SerializedDictionary<string, string> _stringValues = new();
+
+        [Space]
         [SerializeField]
         private SaveableClassesDictionary _classesSave = new();
 
