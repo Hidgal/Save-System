@@ -1,0 +1,16 @@
+{
+    "name": "SaveSystem.Editor",
+    "rootNamespace": "SaveSystem.Editor",
+    "references": [
+        "GUID:c988a0e34170d2f459b56b65dde0fb2b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
