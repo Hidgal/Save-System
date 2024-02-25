@@ -14,11 +14,11 @@ namespace SaveSystem.Utils.Editor
             var pathToFile = EditorUtility.OpenFilePanelWithFilters("Select JSON with save", "", new string[] { "JSON files", "json" });
             if (File.Exists(pathToFile))
             {
-                var fileString = File.ReadAllText(pathToFile);
+                var fileData = File.ReadAllBytes(pathToFile);
                 var settings = SaveSystemAssetUtils.GetSettings();
 
                 var parser = new JsonParser(settings);
-                var result = parser.FromJson<SaveData>(fileString);
+                var result = parser.FromJson<SaveData>(fileData);
                 
                 if(result != null)
                 {
@@ -41,7 +41,7 @@ namespace SaveSystem.Utils.Editor
             var settings = SaveSystemAssetUtils.GetSettings();
             var parser = new JsonParser(settings);
             var result = parser.ToJson(dataAsset.Data);
-            File.WriteAllText(pathToFile, result);
+            File.WriteAllBytes(pathToFile, result);
         }
     }
 }

@@ -26,11 +26,11 @@ namespace SaveSystem.Internal.SaveLoaders
             if (!File.Exists(pathToFile))
             {
                 data = new();
-                File.WriteAllText(pathToFile, _parser.ToJson(data));
+                File.WriteAllBytes(pathToFile, _parser.ToJson(data));
             }
             else
             {
-                var json = File.ReadAllText(pathToFile);
+                var json = File.ReadAllBytes(pathToFile);
 
                 try
                 {
@@ -51,9 +51,9 @@ namespace SaveSystem.Internal.SaveLoaders
             CreateFolderIfNotExists(Settings.JsonSavePath);
 
             var pathToFile = Path.Combine(Settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
-            string parsedData = _parser.ToJson(data);
+            var parsedData = _parser.ToJson(data);
 
-            File.WriteAllText(pathToFile, parsedData);
+            File.WriteAllBytes(pathToFile, parsedData);
         }
 
         internal override void ClearData(string key)

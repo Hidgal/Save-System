@@ -1,4 +1,5 @@
 using System.IO;
+using SaveSystem.Utils;
 using UnityEngine;
 
 namespace SaveSystem.Misc
@@ -24,14 +25,16 @@ namespace SaveSystem.Misc
         /// Full path to saves folder including path to data storage
         /// </summary>
         public string JsonSavePath => Path.Combine(Application.persistentDataPath, _jsonSavePath);
-        public bool UseEncryption => _useDaataEncryption;
-        public int EncryptionKey => _jsonEncryptionKey;
+        public bool UseEncryption => _useDataEncryption;
+        public byte[] EncryptionKey => _encryptionKey;
+        public byte[] EncryptionIv => _encryptionIv;
 
         public bool AutoSaveOnApplicationQuit => _autoSaveOnApplicationQuit;
         public bool AutoSaveOnApplicationLostFocus => _autoSaveOnApplicationLostFocus;
 
 
 #if UNITY_EDITOR
+        [Header("Scriptable Saves Settings")]
         [SerializeField]
         private bool _useScriptableSavesInEditor = true;
         [SerializeField]
@@ -40,23 +43,38 @@ namespace SaveSystem.Misc
 #endif
 
         [Space]
-        [SerializeField]
-        private string _defaultProfileName = "Default Profile";
-
-        [Space]
+        [Header("Json settings")]
         [SerializeField]
         [Tooltip("Relative to the App data folder")]
         private string _jsonSavePath = "Data";
+        
+        [Header("Encryption Settings")]
         [SerializeField]
-        private bool _useDaataEncryption = true;
+        private bool _useDataEncryption = true;
         [SerializeField]
-        private int _jsonEncryptionKey = 8976;
+        private byte[] _encryptionKey;
+        [SerializeField]
+        private byte[] _encryptionIv;
 
         [Space]
+        [Header("Other settings")]
         [SerializeField]
         private bool _autoSaveOnApplicationQuit = true;
         [SerializeField]
         private bool _autoSaveOnApplicationLostFocus = true;
+
+        [Space]
+        [SerializeField]
+        private string _defaultProfileName = "Default Profile";
+
+        public void GenerateKeys(bool useDefault = true)
+        {
+            string keyReference = useDefault ? EncryptionSystem.DEFAULT_KEY : Application.productName;
+            string ivReference = useDefault ? EncryptionSystem.DEFAULT_IV : Application.companyName;
+
+            EncryptionSystem.GenerateKey(ref _encryptionKey, 32, keyReference);
+            EncryptionSystem.GenerateKey(ref _encryptionIv, 16, ivReference);
+        }
     }
 }
 

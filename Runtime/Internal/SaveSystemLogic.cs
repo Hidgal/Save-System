@@ -11,7 +11,7 @@ namespace SaveSystem.Internal
             get => GetGlobalData();
         }
         
-        public string CurrentProfileName
+        public string ProfileName
         {
             get
             {
@@ -32,7 +32,7 @@ namespace SaveSystem.Internal
             }
         }
 
-        public SaveData CurrentProfileData { get; private set; }
+        public SaveData ProfileData { get; private set; }
 
         private Dictionary<string, SaveData> _profileDatas;
         private DataSaveLoader _saveLoader;
@@ -82,13 +82,13 @@ namespace SaveSystem.Internal
 
         public void SwitchToProfile(string profileName)
         {
-            if (CurrentProfileName.Equals(profileName)) return;
+            if (ProfileName.Equals(profileName)) return;
 
-            CurrentProfileName = profileName;
-            CurrentProfileData = GetCurentProfileData();
+            ProfileName = profileName;
+            ProfileData = GetCurentProfileData();
         }
 
-        public SaveData GetCurentProfileData() => GetProfileData(CurrentProfileName);
+        public SaveData GetCurentProfileData() => GetProfileData(ProfileName);
         public SaveData GetProfileData(string profileName)
         {
             if (!_profileDatas.ContainsKey(profileName))
@@ -102,7 +102,7 @@ namespace SaveSystem.Internal
             return _profileDatas[profileName];
         }
 
-        public void ClearCurrentProfile() => ClearProfile(CurrentProfileName);
+        public void ClearCurrentProfile() => ClearProfile(ProfileName);
         public void ClearProfile(string profileName)
         {
             if (_profileDatas.ContainsKey(profileName))

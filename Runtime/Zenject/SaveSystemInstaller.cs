@@ -18,7 +18,29 @@ namespace SaveSystem.Zenject
         {
             Container.BindInterfacesTo<SaveSystemLogic>().AsSingle().WithArguments(_settings);
         }
+
+#if UNITY_EDITOR
+        private void Reset()
+        {
+            if (_settings == null)
+                _settings = new();
+
+            if (_settings.EncryptionIv == null || _settings.EncryptionIv.Length == 0
+                || _settings.EncryptionKey == null || _settings.EncryptionKey.Length == 0)
+            {
+                _settings.GenerateKeys();
+                UnityEditor.EditorUtility.SetDirty(this);
+            }
+        }
+
+        [ContextMenu("Generate Keys For Project")]
+        private void GenerateEncryptKeysForProject()
+        {
+            _settings.GenerateKeys(false);
+            UnityEditor.EditorUtility.SetDirty(this);
+        }
+#endif
     }
-} 
+}
 //#endif
 
