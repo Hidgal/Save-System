@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using SaveSystem.Utils;
 using UnityEditor;
 using UnityEngine;
@@ -55,6 +53,30 @@ namespace SaveSystem.Editor.Inspector
         {
             _propertyHeight = _minimalHeight;
 
+            DrawHeader(position, property, label);
+
+            if (_isExpanded)
+            {
+                var keysProperty = property.FindPropertyRelative(KEYS_LIST_NAME);
+                var valuesProperty = property.FindPropertyRelative(VALUES_LIST_NAME);
+
+                _propertyHeight = (keysProperty.arraySize + 2) * EditorGUIUtility.singleLineHeight + _rectVerticalOffset * 2;
+
+                var contentRect = DrawContentBackground(position);
+
+                if (keysProperty.arraySize == 0)
+                {
+                    DrawNoElements(contentRect);
+                    return;
+                }
+
+                DrawSearchField(contentRect);
+                DrawDictionaryElements(contentRect, property, keysProperty, valuesProperty);
+            }
+        }
+
+        private void DrawHeader(Rect position, SerializedProperty property, GUIContent label)
+        {
             var headerRect = position;
             headerRect.height = EditorGUIUtility.singleLineHeight;
             EditorGUI.BeginProperty(headerRect, label, property);
@@ -63,94 +85,120 @@ namespace SaveSystem.Editor.Inspector
                 _isExpanded = EditorGUI.Foldout(headerRect, _isExpanded, label, true);
             }
             EditorGUI.EndProperty();
+        }
 
-            if (_isExpanded)
+        private void DrawNoElements(Rect rootRect)
+        {
+            var labelRect = rootRect;
+            labelRect.height = EditorGUIUtility.singleLineHeight;
+            labelRect.y += EditorGUIUtility.standardVerticalSpacing;
+            EditorGUI.LabelField(labelRect, "No saved data");
+        }
+
+        private Rect DrawContentBackground(Rect rootRect)
+        {
+            var contentRect = rootRect;
+            contentRect.y += _fieldVerticalOffset;
+            contentRect.x += _indentOffset;
+            contentRect.width -= _indentOffset;
+            contentRect.height = _propertyHeight + _rectVerticalOffset - EditorGUIUtility.singleLineHeight;
+
+            EditorGUI.DrawRect(contentRect, _backgroundColor);
+
+            return contentRect;
+        }
+
+        private void DrawSearchField(Rect rootRect)
+        {
+            var searchPosition = rootRect;
+            searchPosition.y += EditorGUIUtility.standardVerticalSpacing;
+            searchPosition.height = EditorGUIUtility.singleLineHeight;
+            _searchString = EditorGUI.TextField(searchPosition, "", _searchString);
+            if (_searchString.Length == 0 || _searchString.Equals(string.Empty))
             {
-                var keysProperty = property.FindPropertyRelative(KEYS_LIST_NAME);
-                var valuesProperty = property.FindPropertyRelative(VALUES_LIST_NAME);
-                _propertyHeight = (keysProperty.arraySize + 2) * EditorGUIUtility.singleLineHeight + _rectVerticalOffset * 2;
-
-                var contentRect = position;
-                contentRect.y += _fieldVerticalOffset;
-                contentRect.x += _indentOffset;
-                contentRect.width -= _indentOffset;
-                contentRect.height = _propertyHeight + _rectVerticalOffset - EditorGUIUtility.singleLineHeight;
-
-                EditorGUI.DrawRect(contentRect, _backgroundColor);
-
-                if (keysProperty.arraySize == 0)
-                {
-                    var labelRect = contentRect;
-                    labelRect.height = EditorGUIUtility.singleLineHeight;
-                    labelRect.y += EditorGUIUtility.standardVerticalSpacing;
-                    EditorGUI.LabelField(labelRect, "No saved data");
-                    
-                    return;
-                }
-
-                var searchPosition = contentRect;
-                searchPosition.y += EditorGUIUtility.standardVerticalSpacing;
-                searchPosition.height = EditorGUIUtility.singleLineHeight;
-                _searchString = EditorGUI.TextField(searchPosition, "", _searchString);
-                if(_searchString.Length == 0 || _searchString.Equals(string.Empty))
-                {
-                    var style = new GUIStyle(GUI.skin.label);
-                    style.fontStyle = FontStyle.Italic;
-                    style.normal.textColor = Color.gray;
-                    EditorGUI.LabelField(searchPosition, "Search...", style);
-                }
-
-                var keyRect = contentRect;
-                keyRect.x += _indentOffset;
-                keyRect.y += EditorGUIUtility.standardVerticalSpacing;
-                keyRect.height = EditorGUIUtility.singleLineHeight;
-                keyRect.width *= KEYS_SECTION_PERCENT;
-                keyRect.width -= _indentOffset;
-
-                var valueRect = contentRect;
-                valueRect.height = EditorGUIUtility.singleLineHeight;
-                valueRect.width *= VALUES_SECTION_PERCENT;
-                valueRect.width -= _indentOffset;
-                valueRect.x += keyRect.width + _indentOffset;
-                valueRect.y += EditorGUIUtility.standardVerticalSpacing;
-
-                var fieldRect = contentRect;
-                fieldRect.height = EditorGUIUtility.singleLineHeight;
-                fieldRect.width -= _indentOffset * 2;
-                fieldRect.x += _indentOffset * 2;
-                fieldRect.y += EditorGUIUtility.standardVerticalSpacing;
-
-                string keyLabel;
-                SerializedProperty valueProperty;
-                var valueLabel = new GUIContent();
-
-                for (int i = 0; i < keysProperty.arraySize; i++)
-                {
-                    keyLabel = keysProperty.GetArrayElementAtIndex(i).stringValue;
-                    valueProperty = valuesProperty.GetArrayElementAtIndex(i);
-
-                    if (!_searchString.Equals(string.Empty))
-                    {
-                        if (!IsSuitableForSearch(keyLabel) && !IsSuitableForSearch(valueProperty.stringValue))
-                        {
-                            continue;
-                        }
-                    }
-
-                    keyRect.y += _fieldVerticalOffset;
-                    valueRect.y += _fieldVerticalOffset;
-                    fieldRect.y += _fieldVerticalOffset;
-
-                    EditorGUI.DrawRect(fieldRect, _fieldColor);
-
-                    EditorGUI.LabelField(keyRect, keyLabel);                                    
-                    EditorGUI.BeginProperty(valueRect, valueLabel, property);
-                    {
-                        EditorGUI.PropertyField(valueRect, valueProperty, valueLabel);
-                    }
-                    EditorGUI.EndProperty();
-                }
+                var style = new GUIStyle(GUI.skin.label);
+                style.fontStyle = FontStyle.Italic;
+                style.normal.textColor = Color.gray;
+                EditorGUI.LabelField(searchPosition, "Search...", style);
             }
+        }
+
+        private void DrawDictionaryElements(Rect contentRect, SerializedProperty property, SerializedProperty keysProperty, SerializedProperty valuesProperty)
+        {
+            var keyRect = contentRect;
+            keyRect.x += _indentOffset;
+            keyRect.y += EditorGUIUtility.standardVerticalSpacing;
+            keyRect.height = EditorGUIUtility.singleLineHeight;
+            keyRect.width *= KEYS_SECTION_PERCENT;
+            keyRect.width -= _indentOffset;
+
+            var valueRect = contentRect;
+            valueRect.height = EditorGUIUtility.singleLineHeight;
+            valueRect.width *= VALUES_SECTION_PERCENT;
+            valueRect.width -= _indentOffset;
+            valueRect.x += keyRect.width + _indentOffset;
+            valueRect.y += EditorGUIUtility.standardVerticalSpacing;
+
+            var fieldRect = contentRect;
+            fieldRect.height = EditorGUIUtility.singleLineHeight;
+            fieldRect.width -= _indentOffset * 2;
+            fieldRect.x += _indentOffset * 2;
+            fieldRect.y += EditorGUIUtility.standardVerticalSpacing;
+
+            string keyLabel;
+            SerializedProperty valueProperty;
+            var valueLabel = new GUIContent();
+
+            for (int i = 0; i < keysProperty.arraySize; i++)
+            {
+                keyLabel = keysProperty.GetArrayElementAtIndex(i).stringValue;
+                valueProperty = valuesProperty.GetArrayElementAtIndex(i);
+
+                if (!IsElementSuitableForSearch(keyLabel, valueProperty))
+                    continue;
+
+                DrawDictionaryElementField(fieldRect, keyRect, keyLabel, valueRect, valueProperty, valueLabel);
+            }
+        }
+
+        private void DrawDictionaryElementField(
+            Rect fieldRect,
+            Rect keyRect, string keyLabel,
+            Rect valueRect, SerializedProperty valueProperty, GUIContent valueLabel)
+        {
+            keyRect.y += _fieldVerticalOffset;
+            valueRect.y += _fieldVerticalOffset;
+            fieldRect.y += _fieldVerticalOffset;
+
+            EditorGUI.DrawRect(fieldRect, _fieldColor);
+
+            EditorGUI.LabelField(keyRect, keyLabel);
+            EditorGUI.BeginProperty(valueRect, valueLabel, valueProperty);
+            {
+                EditorGUI.PropertyField(valueRect, valueProperty, valueLabel);
+            }
+            EditorGUI.EndProperty();
+        }
+
+        private bool IsElementSuitableForSearch(string label, SerializedProperty property)
+        {
+            if (!_searchString.Equals(string.Empty))
+            {
+                //if is suitable return true
+                if (IsSuitableForSearch(label))
+                    return true;
+
+                //else if property has string type check value
+                if (property.propertyType == SerializedPropertyType.String)
+                {
+                    return IsSuitableForSearch(property.stringValue);
+                }
+
+                //else return false
+                return false;
+            }
+
+            return true;
         }
 
         private bool IsSuitableForSearch(string value)

@@ -10,8 +10,8 @@ namespace SaveSystem.Internal
         {
             get => GetGlobalData();
         }
-        
-        public string ProfileName
+
+        public string ActiveProfileName
         {
             get
             {
@@ -21,23 +21,25 @@ namespace SaveSystem.Internal
                 }
                 else
                 {
-                    GlobalData.SaveStringValue(SaveSystemConstants.PROFILE_KEY, _settings.DefaultProfileName);
+                    GlobalData.SetStringValue(SaveSystemConstants.PROFILE_KEY, _settings.DefaultProfileName);
                     return _settings.DefaultProfileName;
                 }
             }
 
             private set
             {
-                GlobalData.SaveStringValue(SaveSystemConstants.PROFILE_KEY, value);
+                GlobalData.SetStringValue(SaveSystemConstants.PROFILE_KEY, value);
             }
         }
 
-        public SaveData ProfileData { get; private set; }
+        public SaveData ProfileData => GetCurentProfileData();
 
         private Dictionary<string, SaveData> _profileDatas;
         private DataSaveLoader _saveLoader;
-        private SaveData _globalData;
         private SaveSystemSettings _settings;
+        
+        private SaveData _globalData;
+        private SaveData _activeProfileData;
 
         public SaveSystemLogic(SaveSystemSettings settings)
         {
@@ -80,29 +82,54 @@ namespace SaveSystem.Internal
             _saveLoader.ClearData(SaveSystemConstants.GLOBAL_DATA_KEY);
         }
 
-        public void SwitchToProfile(string profileName)
+        public void SetProfile(string profileName)
         {
-            if (ProfileName.Equals(profileName)) return;
+            if (ActiveProfileName.Equals(profileName)) return;
 
-            ProfileName = profileName;
-            ProfileData = GetCurentProfileData();
+            ActiveProfileName = profileName;
+            _activeProfileData = GetProfileData(profileName);
         }
 
-        public SaveData GetCurentProfileData() => GetProfileData(ProfileName);
+        public SaveData GetCurentProfileData()
+        {
+            if(_activeProfileData == null)
+            {
+                return GetProfileData(ActiveProfileName);
+            }
+
+            return _activeProfileData;
+        }
         public SaveData GetProfileData(string profileName)
         {
-            if (!_profileDatas.ContainsKey(profileName))
-            { 
-                var data = _saveLoader.LoadData(profileName);
-                _profileDatas.Add(profileName, data);
-
-                InitializeData(_profileDatas[profileName], profileName);
+            if (_profileDatas.ContainsKey(profileName))
+            {
+                return _profileDatas[profileName];
             }
-            
+
+            return CreateProfileInternal(profileName);
+        }
+
+        public SaveData CreateProfile(string profileName)
+        {
+            if (_profileDatas.ContainsKey(profileName))
+            {
+                UnityEngine.Debug.LogError($"Can`t create profile with name {profileName}: there`s already a profile with the same name!");
+                return _profileDatas[profileName];
+            }
+
+            return CreateProfileInternal(profileName);
+        }
+        private SaveData CreateProfileInternal(string profileName)
+        {
+            var data = _saveLoader.LoadData(profileName);
+            _profileDatas.Add(profileName, data);
+
+            InitializeData(_profileDatas[profileName], profileName);
+
             return _profileDatas[profileName];
         }
 
-        public void ClearCurrentProfile() => ClearProfile(ProfileName);
+        public void ClearActiveProfile() => ClearProfile(ActiveProfileName);
         public void ClearProfile(string profileName)
         {
             if (_profileDatas.ContainsKey(profileName))
@@ -115,7 +142,7 @@ namespace SaveSystem.Internal
 
         private SaveData GetGlobalData()
         {
-            if(_globalData == null)
+            if (_globalData == null)
             {
                 _globalData = _saveLoader.LoadData(SaveSystemConstants.GLOBAL_DATA_KEY);
                 InitializeData(_globalData, SaveSystemConstants.GLOBAL_DATA_KEY);
@@ -136,7 +163,7 @@ namespace SaveSystem.Internal
             {
                 _saveLoader = new ScriptableDataSaveLoader(settings);
                 return;
-            } 
+            }
 #endif
 
             _saveLoader = new JsonDataSaveLoader(settings);

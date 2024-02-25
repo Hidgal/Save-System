@@ -68,7 +68,7 @@ namespace SaveSystem
         /// </summary>
         /// <typeparam name="T">Type of saveable class</typeparam>
         /// <param name="autoSave">If true - immediately saves data to file</param>
-        public void SaveClass<T>(T classData, bool autoSave = true) where T : SaveableClass
+        public void SetClass<T>(T classData, bool autoSave = true) where T : SaveableClass
         {
             if (classData == null)
             {
@@ -110,7 +110,7 @@ namespace SaveSystem
         /// If autoSave is true - immediately saves data to file
         /// </summary>
         /// <param name="autoSave">If true - immediately saves data to file</param>
-        public void SaveIntValue(string key, int value, bool autoSave = true)
+        public void SetIntValue(string key, int value, bool autoSave = true)
         {
             if (_intValues.ContainsKey(key))
             {
@@ -144,7 +144,7 @@ namespace SaveSystem
         /// If autoSave is true - immediately saves data to file
         /// </summary>
         /// <param name="autoSave">If true - immediately saves data to file</param>
-        public void SaveFloatValue(string key, float value, bool autoSave = true)
+        public void SetFloatValue(string key, float value, bool autoSave = true)
         {
             if (_floatValues.ContainsKey(key))
             {
@@ -173,7 +173,7 @@ namespace SaveSystem
         /// If autoSave is true - immediately saves data to file
         /// </summary>
         /// <param name="autoSave">If true - immediately saves data to file</param>
-        public void SaveBoolValue(string key, bool value, bool autoSave = true)
+        public void SetBoolValue(string key, bool value, bool autoSave = true)
         {
             if (_boolValues.ContainsKey(key))
             {
@@ -207,7 +207,7 @@ namespace SaveSystem
         /// If autoSave is true - immediately saves data to file
         /// </summary>
         /// <param name="autoSave">If true - immediately saves data to file</param>
-        public void SaveStringValue(string key, string value, bool autoSave = true)
+        public void SetStringValue(string key, string value, bool autoSave = true)
         {
             if (_stringValues.ContainsKey(key))
             {
