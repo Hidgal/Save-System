@@ -9,19 +9,19 @@ namespace SaveSystem
     public class SaveData
     {
         [SerializeField]
-        private SerializedDictionary<string, int> _intValues = new();
+        private SerializableDictionary<string, int> _intValues = new();
         
         [Space]
         [SerializeField]
-        private SerializedDictionary<string, bool> _boolValues = new();
+        private SerializableDictionary<string, bool> _boolValues = new();
 
         [Space]
         [SerializeField]
-        private SerializedDictionary<string, float> _floatValues = new();
+        private SerializableDictionary<string, float> _floatValues = new();
 
         [Space]
         [SerializeField]
-        private SerializedDictionary<string, string> _stringValues = new();
+        private SerializableDictionary<string, string> _stringValues = new();
 
         [Space]
         [SerializeField]
@@ -33,7 +33,7 @@ namespace SaveSystem
         #region Classes Save
         /// <typeparam name="T">Type of saveable class</typeparam>
         /// <returns>True if has data in save</returns>
-        public bool HasClass<T>() where T : SaveableClass
+        public bool HasClass<T>() where T : SaveableData
         {
             return _classesSave.ContainsKey(_classesSave.GetClassKey<T>());
         }
@@ -43,7 +43,7 @@ namespace SaveSystem
         /// </summary>
         /// <typeparam name="T">Type of saveable class</typeparam>
         /// <returns>Instance of required type</returns>
-        public T GetClass<T>(bool autoSave = true) where T : SaveableClass
+        public T GetClass<T>(bool autoSave = true) where T : SaveableData
         {
             var key = _classesSave.GetClassKey<T>();
 
@@ -68,7 +68,7 @@ namespace SaveSystem
         /// </summary>
         /// <typeparam name="T">Type of saveable class</typeparam>
         /// <param name="autoSave">If true - immediately saves data to file</param>
-        public void SetClass<T>(T classData, bool autoSave = true) where T : SaveableClass
+        public void SetClass<T>(T classData, bool autoSave = true) where T : SaveableData
         {
             if (classData == null)
             {
@@ -245,7 +245,7 @@ namespace SaveSystem
             _clearAction = clearAction;
         }
 
-        private T CreateClassInstance<T>() where T : SaveableClass
+        private T CreateClassInstance<T>() where T : SaveableData
         {
             return (T)Activator.CreateInstance(typeof(T));
         }

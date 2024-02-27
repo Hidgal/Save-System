@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SaveSystem.Utils
 {
     [Serializable]
-    public class SerializedDictionary<K, V> : SerializedDictionary<K, V, K, V>
+    public class SerializableDictionary<K, V> : SerializableDictionary<K, V, K, V>
     {
         /// <summary>
         /// Conversion to serialize a key
@@ -44,13 +44,10 @@ namespace SaveSystem.Utils
     /// <typeparam name="SK">The type which the key will be serialized for</typeparam>
     /// <typeparam name="SV">The type which the value will be serialized for</typeparam>
     [Serializable]
-    public abstract class SerializedDictionary<K, V, SK, SV> : Dictionary<K, V>, ISerializationCallbackReceiver
+    public abstract class SerializableDictionary<K, V, SK, SV> : Dictionary<K, V>, ISerializationCallbackReceiver
     {
         [SerializeField]
-        private List<SK> _keys = new();
-
-        [SerializeField]
-        private List<SV> _values = new();
+        private List<DictionaryData<SK, SV>> _datas = new();
 
         /// <summary>
         /// From <see cref="K"/> to <see cref="SK"/>
@@ -86,13 +83,11 @@ namespace SaveSystem.Utils
         /// </summary>
         public void OnBeforeSerialize()
         {
-            _keys.Clear();
-            _values.Clear();
+            _datas.Clear();
 
             foreach (var kvp in this)
             {
-                _keys.Add(SerializeKey(kvp.Key));
-                _values.Add(SerializeValue(kvp.Value));
+                _datas.Add(new(SerializeKey(kvp.Key), SerializeValue(kvp.Value)));
             }
         }
 
@@ -106,19 +101,15 @@ namespace SaveSystem.Utils
 
             Clear();
 
-            for (int i = 0; i < _keys.Count; i++)
+            foreach(var data in _datas)
             {
-                deserializedKey = DeserializeKey(_keys[i]);
+                deserializedKey = DeserializeKey(data.Key);
+                deserializedValue = DeserializeValue(deserializedKey, data.Value);
 
-                if (deserializedKey == null) 
-                    continue;
-
-                deserializedValue = DeserializeValue(deserializedKey, _values[i]);
                 Add(deserializedKey, deserializedValue);
             }
 
-            _keys.Clear();
-            _values.Clear();
+            _datas.Clear();
         }
     } 
 }
