@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System.IO;
 using SaveSystem.Internal;
 using SaveSystem.Scriptables;
@@ -19,8 +20,8 @@ namespace SaveSystem.Utils.Editor
 
                 var parser = new JsonParser(settings);
                 var result = parser.FromJson<SaveData>(fileData);
-                
-                if(result != null)
+
+                if (result != null)
                 {
                     dataAsset.SaveData(result);
                     AssetDatabase.SaveAssetIfDirty(dataAsset);
@@ -45,3 +46,4 @@ namespace SaveSystem.Utils.Editor
         }
     }
 }
+#endif
