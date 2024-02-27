@@ -4,79 +4,84 @@ using UnityEngine;
 
 namespace SaveSystem.Utils
 {
+    /// <summary>
+    /// Dictionary that can serialize keys and values
+    /// </summary>
+    /// <typeparam name="TKey">Key type</typeparam>
+    /// <typeparam name="TValue">Value type</typeparam>
     [Serializable]
-    public class SerializableDictionary<K, V> : SerializableDictionary<K, V, K, V>
+    public class SerializableDictionary<TKey, TValue> : SerializableDictionary<TKey, TValue, TKey, TValue>
     {
         /// <summary>
         /// Conversion to serialize a key
         /// </summary>
         /// <param name="key">The key to serialize</param>
         /// <returns>The Key that has been serialized</returns>
-        public override K SerializeKey(K key) => key;
+        public override TKey SerializeKey(TKey key) => key;
 
         /// <summary>
         /// Conversion to serialize a value
         /// </summary>
         /// <param name="val">The value</param>
         /// <returns>The value</returns>
-        public override V SerializeValue(V val) => val;
+        public override TValue SerializeValue(TValue val) => val;
 
         /// <summary>
         /// Conversion to serialize a key
         /// </summary>
         /// <param name="key">The key to serialize</param>
         /// <returns>The Key that has been serialized</returns>
-        public override K DeserializeKey(K key) => key;
+        public override TKey DeserializeKey(TKey key) => key;
 
         /// <summary>
         /// Conversion to serialize a value
         /// </summary>
         /// <param name="val">The value</param>
         /// <returns>The value</returns>
-        public override V DeserializeValue(K key, V val) => val;
+        public override TValue DeserializeValue(TKey key, TValue val) => val;
     }
 
     /// <summary>
     /// Dictionary that can serialize keys and values as other types
     /// </summary>
-    /// <typeparam name="K">The key type</typeparam>
-    /// <typeparam name="V">The value type</typeparam>
-    /// <typeparam name="SK">The type which the key will be serialized for</typeparam>
-    /// <typeparam name="SV">The type which the value will be serialized for</typeparam>
+    /// <typeparam name="TKey">Key type</typeparam>
+    /// <typeparam name="TValue">Value type</typeparam>
+    /// <typeparam name="STKey">Type which the key will be serialized for</typeparam>
+    /// <typeparam name="STValue">Type which the value will be serialized for</typeparam>
     [Serializable]
-    public abstract class SerializableDictionary<K, V, SK, SV> : Dictionary<K, V>, ISerializationCallbackReceiver
+    public abstract class SerializableDictionary<TKey, TValue, STKey, STValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
     {
         [SerializeField]
-        private List<DictionaryData<SK, SV>> _datas = new();
+        private List<DictionaryData<STKey, STValue>> _datas = new();
 
         /// <summary>
-        /// From <see cref="K"/> to <see cref="SK"/>
+        /// From <see cref="TKey"/> to <see cref="STKey"/>
         /// </summary>
-        /// <param name="key">They key in <see cref="K"/></param>
-        /// <returns>The key in <see cref="SK"/></returns>
-        public abstract SK SerializeKey(K key);
+        /// <param name="key">They key in <see cref="TKey"/></param>
+        /// <returns>The key in <see cref="STKey"/></returns>
+        public abstract STKey SerializeKey(TKey key);
 
         /// <summary>
-        /// From <see cref="V"/> to <see cref="SV"/>
+        /// From <see cref="TValue"/> to <see cref="STValue"/>
         /// </summary>
-        /// <param name="value">The value in <see cref="V"/></param>
-        /// <returns>The value in <see cref="SV"/></returns>
-        public abstract SV SerializeValue(V value);
+        /// <param name="value">The value in <see cref="TValue"/></param>
+        /// <returns>The value in <see cref="STValue"/></returns>
+        public abstract STValue SerializeValue(TValue value);
 
 
         /// <summary>
-        /// From <see cref="SK"/> to <see cref="K"/>
+        /// From <see cref="STKey"/> to <see cref="TKey"/>
         /// </summary>
-        /// <param name="serializedKey">They key in <see cref="SK"/></param>
-        /// <returns>The key in <see cref="K"/></returns>
-        public abstract K DeserializeKey(SK serializedKey);
+        /// <param name="serializedKey">They key in <see cref="STKey"/></param>
+        /// <returns>The key in <see cref="TKey"/></returns>
+        public abstract TKey DeserializeKey(STKey serializedKey);
 
         /// <summary>
-        /// From <see cref="SV"/> to <see cref="V"/>
+        /// From <see cref="STValue"/> to <see cref="TValue"/>
         /// </summary>
-        /// <param name="serializedValue">The value in <see cref="SV"/></param>
-        /// <returns>The value in <see cref="V"/></returns>
-        public abstract V DeserializeValue(K deserializedKey, SV serializedValue);
+        /// <param name="serializedValue">The value in <see cref="STValue"/></param>
+        /// <returns>The value in <see cref="TValue"/></returns>
+        public abstract TValue DeserializeValue(TKey deserializedKey, STValue serializedValue);
 
         /// <summary>
         /// OnBeforeSerialize implementation.
@@ -96,8 +101,8 @@ namespace SaveSystem.Utils
         /// </summary>
         public void OnAfterDeserialize()
         {
-            K deserializedKey;
-            V deserializedValue;
+            TKey deserializedKey;
+            TValue deserializedValue;
 
             Clear();
 
