@@ -4,25 +4,26 @@ using UnityEngine;
 
 namespace SaveSystem.Editor.Inspector
 {
-    [CustomPropertyDrawer(typeof(SerializedDictionary<string, string>))]
-    public class StringStringDictionaryDrawer : SerializedDictionaryCustomDrawer { }
+    [CustomPropertyDrawer(typeof(SerializableDictionary<string, string>))]
+    public class StringStringDictionaryDrawer : SerializableDictionaryCustomDrawer { }
 
-    [CustomPropertyDrawer(typeof(SerializedDictionary<string, float>))]
-    public class StringFloatDictionaryDrawer : SerializedDictionaryCustomDrawer { }
+    [CustomPropertyDrawer(typeof(SerializableDictionary<string, float>))]
+    public class StringFloatDictionaryDrawer : SerializableDictionaryCustomDrawer { }
 
-    [CustomPropertyDrawer(typeof(SerializedDictionary<string, int>))]
-    public class StringIntDictionaryDrawer : SerializedDictionaryCustomDrawer { }
+    [CustomPropertyDrawer(typeof(SerializableDictionary<string, int>))]
+    public class StringIntDictionaryDrawer : SerializableDictionaryCustomDrawer { }
 
-    [CustomPropertyDrawer(typeof(SerializedDictionary<string, bool>))]
-    public class StringBoolDictionaryDrawer : SerializedDictionaryCustomDrawer { }
+    [CustomPropertyDrawer(typeof(SerializableDictionary<string, bool>))]
+    public class StringBoolDictionaryDrawer : SerializableDictionaryCustomDrawer { }
 
-    public abstract class SerializedDictionaryCustomDrawer : PropertyDrawer
+    public abstract class SerializableDictionaryCustomDrawer : PropertyDrawer
     {
         private const float KEYS_SECTION_PERCENT = 0.35f;
         private const float VALUES_SECTION_PERCENT = 1 - KEYS_SECTION_PERCENT;
 
-        private const string KEYS_LIST_NAME = "_keys";
-        private const string VALUES_LIST_NAME = "_values";
+        private const string DATAS_LIST_NAME = "_datas";
+        private const string VALUE_PROPERTY_NAME = "_value";
+        private const string NAME_PROPERTY_NAME = "Name";
 
         private static float _rectVerticalOffset = EditorGUIUtility.standardVerticalSpacing;
         private static float _fieldVerticalOffset = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
@@ -57,21 +58,20 @@ namespace SaveSystem.Editor.Inspector
 
             if (_isExpanded)
             {
-                var keysProperty = property.FindPropertyRelative(KEYS_LIST_NAME);
-                var valuesProperty = property.FindPropertyRelative(VALUES_LIST_NAME);
+                var datasProperty = property.FindPropertyRelative(DATAS_LIST_NAME);
 
-                _propertyHeight = (keysProperty.arraySize + 2) * EditorGUIUtility.singleLineHeight + _rectVerticalOffset * 2;
+                _propertyHeight = (datasProperty.arraySize + 2) * EditorGUIUtility.singleLineHeight + _rectVerticalOffset * 2 + EditorGUIUtility.standardVerticalSpacing * 2;
 
                 var contentRect = DrawContentBackground(position);
 
-                if (keysProperty.arraySize == 0)
+                if (datasProperty.arraySize == 0)
                 {
                     DrawNoElements(contentRect);
                     return;
                 }
 
                 DrawSearchField(contentRect);
-                DrawDictionaryElements(contentRect, property, keysProperty, valuesProperty);
+                DrawDictionaryElements(contentRect, property, datasProperty);
             }
         }
 
@@ -123,7 +123,7 @@ namespace SaveSystem.Editor.Inspector
             }
         }
 
-        private void DrawDictionaryElements(Rect contentRect, SerializedProperty property, SerializedProperty keysProperty, SerializedProperty valuesProperty)
+        private void DrawDictionaryElements(Rect contentRect, SerializedProperty property, SerializedProperty datasProperty)
         {
             var keyRect = contentRect;
             keyRect.x += _indentOffset;
@@ -147,24 +147,29 @@ namespace SaveSystem.Editor.Inspector
 
             string keyLabel;
             SerializedProperty valueProperty;
+            SerializedProperty elementProperty;
             var valueLabel = new GUIContent();
 
-            for (int i = 0; i < keysProperty.arraySize; i++)
+            for (int i = 0; i < datasProperty.arraySize; i++)
             {
-                keyLabel = keysProperty.GetArrayElementAtIndex(i).stringValue;
-                valueProperty = valuesProperty.GetArrayElementAtIndex(i);
+                elementProperty = datasProperty.GetArrayElementAtIndex(i);
+                if (elementProperty == null)
+                    continue;
+
+                keyLabel = elementProperty.displayName;
+                valueProperty = elementProperty.FindPropertyRelative(VALUE_PROPERTY_NAME);
 
                 if (!IsElementSuitableForSearch(keyLabel, valueProperty))
                     continue;
 
-                DrawDictionaryElementField(fieldRect, keyRect, keyLabel, valueRect, valueProperty, valueLabel);
+                DrawDictionaryElementField(ref fieldRect, ref keyRect, keyLabel, ref valueRect, valueProperty, valueLabel);
             }
         }
 
         private void DrawDictionaryElementField(
-            Rect fieldRect,
-            Rect keyRect, string keyLabel,
-            Rect valueRect, SerializedProperty valueProperty, GUIContent valueLabel)
+            ref Rect fieldRect,
+            ref Rect keyRect, string keyLabel,
+            ref Rect valueRect, SerializedProperty valueProperty, GUIContent valueLabel)
         {
             keyRect.y += _fieldVerticalOffset;
             valueRect.y += _fieldVerticalOffset;
@@ -188,10 +193,17 @@ namespace SaveSystem.Editor.Inspector
                 if (IsSuitableForSearch(label))
                     return true;
 
-                //else if property has string type check value
+                //if property is a string then check value
                 if (property.propertyType == SerializedPropertyType.String)
                 {
                     return IsSuitableForSearch(property.stringValue);
+                }
+
+                //if property is not generic, check it`s string implementation
+                //generic classes has a lot of limitaion for boxed values
+                if(property.propertyType != SerializedPropertyType.Generic)
+                {
+                    return IsSuitableForSearch(property.boxedValue.ToString());
                 }
 
                 //else return false
