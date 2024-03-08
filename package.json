@@ -1,18 +1,17 @@
 {
   "name": "com.hidgal.save.system",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "displayName": "Save System",
   "description": "Save-load system for Unity",
   "unity": "2021.3",
-  "unityRelease": "1f1",
+  "unityRelease": "30f1",
   "keywords": [
-    "gameon",
-    "utils",
-    "save"
+    "save",
+    "utils"
   ],
   "author": {
-    "name": "GameOnProduction Team",
-    "email": "stanislav.bukotkin@gameonproduction.com",
-    "url": "https://gameonproduction.com"
+    "name": "Hidgal",
+    "email": "hidgal.games@gmail.com",
+    "url": ""
   }
 }
