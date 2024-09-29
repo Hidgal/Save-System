@@ -10,9 +10,12 @@ namespace SaveSystem.Internal.Data
         [SerializeReference]
         private List<SaveData> _dataList;
 
-        private Dictionary<Type, int> _indexesDictionary;
         private Action _saveAction;
         private Action _clearAction;
+        private Dictionary<Type, int> _indexesDictionary;
+
+        public List<SaveData> DataList => _dataList;
+        public IReadOnlyDictionary<Type, int> IndexesDictionary => _indexesDictionary;
 
         public SaveContainer()
         {
