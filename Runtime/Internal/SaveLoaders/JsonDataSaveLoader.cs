@@ -7,22 +7,24 @@ using UnityEngine;
 
 namespace SaveSystem.Internal.SaveLoaders
 {
-    internal class JsonDataSaveLoader : DataSaveLoader
+    public class JsonDataSaveLoader
     {
+        private readonly SaveSystemSettings _settings;
         private readonly SaveSystemJsonParser _parser;
 
-        public JsonDataSaveLoader(SaveSystemSettings settings) : base(settings)
+        public JsonDataSaveLoader(SaveSystemSettings settings)
         {
+            _settings = settings;
             _parser = new(settings);
         }
 
-        internal override SaveContainer LoadData(string key)
+        public SaveContainer LoadData(string key)
         {
-            var pathToFile = Path.Combine(Settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
+            var pathToFile = Path.Combine(_settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
 
             SaveContainer data;
 
-            CreateFolderIfNotExists(Settings.JsonSavePath);
+            CreateFolderIfNotExists(_settings.JsonSavePath);
 
             if (!File.Exists(pathToFile))
             {
@@ -47,24 +49,32 @@ namespace SaveSystem.Internal.SaveLoaders
             return data;
         }
 
-        internal override void SaveData(string key, SaveContainer data)
+        public void SaveData(string key, SaveContainer data)
         {
-            CreateFolderIfNotExists(Settings.JsonSavePath);
+            CreateFolderIfNotExists(_settings.JsonSavePath);
 
-            var pathToFile = Path.Combine(Settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
+            var pathToFile = Path.Combine(_settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
             var parsedData = _parser.ToJson(data);
 
             File.WriteAllBytes(pathToFile, parsedData);
         }
 
-        internal override void ClearData(string key)
+        public void ClearData(string key)
         {
-            if (!Directory.Exists(Settings.JsonSavePath)) return;
+            if (!Directory.Exists(_settings.JsonSavePath)) return;
 
-            var pathToFile = Path.Combine(Settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
+            var pathToFile = Path.Combine(_settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
             if (!File.Exists(pathToFile)) return;
 
             File.Delete(pathToFile);
+        }
+
+        private void CreateFolderIfNotExists(string folderPath)
+        {
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
         }
     }
 }

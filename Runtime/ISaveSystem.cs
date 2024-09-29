@@ -8,27 +8,21 @@ namespace SaveSystem
         ISave Global { get; }
 
         /// <summary>
-        /// Name of currently selected profile
-        /// </summary>
-        string ActiveProfileName { get; }
-
-        /// <summary>
         /// Data of currently selected profile
         /// </summary>
         ISave Profile { get; }
 
         /// <summary>
-        /// Data of currently selected profile
+        /// Name of currently selected profile
         /// </summary>
-        ISave GetCurentProfileData();
-
+        string ProfileName { get; }
 
 
         /// <summary>
         /// Returns data for profile with nameed as <paramref name="profileName"/>. 
         /// Returns new data if there`s no data in save files.
         /// </summary>
-        ISave GetProfileData(string profileName);
+        ISave GetProfile(string profileName);
 
         /// <summary>
         /// Creates new profile names as <paramref name="profileName"/>
@@ -38,15 +32,15 @@ namespace SaveSystem
         ISave CreateProfile(string profileName);
 
         /// <summary>
-        /// Switch active profile to <paramref name="profileName"/>. If there`s no such profile, creates new.
+        /// Switch active profile to <paramref name="newProfileName"/>. If there`s no such profile, creates new.
         /// </summary>
-        /// <param name="profileName"></param>
-        void SetProfile(string profileName);
+        /// <param name="newProfileName"></param>
+        void SwitchProfile(string newProfileName);
 
         /// <summary>
         /// Clear all data of active profile.
         /// </summary>
-        void ClearActiveProfile();
+        void ClearProfile();
 
         /// <summary>
         /// Clear all data for <paramref name="profileName"/> if it exists.

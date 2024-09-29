@@ -7,16 +7,14 @@ namespace SaveSystem.Internal.Settings
     [System.Serializable]
     public class SaveSystemSettings
     {
-#if UNITY_EDITOR
         /// <summary>
         /// Editor only! Full path to saves folder including path to project
         /// </summary>
-        public string ScriptableSavesPath => Path.Combine(Application.dataPath, _scriptableSavesPath);
+        public string ScriptableSavesPath => Path.Combine(Application.dataPath, "Resources", _scriptableSavesPath);
         /// <summary>
         /// Editor only! Relative path to saves folder. Starting from Assets
         /// </summary>
-        public string ScriptableSavesRelativePath => Path.Combine("Assets", _scriptableSavesPath);
-#endif
+        public string ScriptableSavesRelativePath => Path.Combine("Assets", "Resources", _scriptableSavesPath);
 
         public string DefaultProfileName => _defaultProfileName;
 
@@ -32,18 +30,16 @@ namespace SaveSystem.Internal.Settings
         public bool AutoSaveOnApplicationLostFocus => _autoSaveOnApplicationLostFocus;
 
 
-#if UNITY_EDITOR
         [SerializeField]
-        [Tooltip("Relative to the Assets folder")]
+        [Tooltip("Relative to the Resources folder")]
         private string _scriptableSavesPath = "Saves";
-#endif
 
         [Space]
         [Header("Json settings")]
         [SerializeField]
         [Tooltip("Relative to the App data folder")]
         private string _jsonSavePath = "Data";
-        
+
         [Header("Encryption Settings")]
         [SerializeField]
         private bool _useDataEncryption = true;

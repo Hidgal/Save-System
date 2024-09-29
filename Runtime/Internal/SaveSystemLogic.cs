@@ -10,16 +10,16 @@ namespace SaveSystem.Internal
     {
         private readonly Dictionary<string, SaveContainer> _profileDatas;
         private readonly SaveSystemSettings _settings;
-        private readonly DataSaveLoader _saveLoader;
+        private readonly SaveLoader _saveLoader;
 
         private SaveSystemSaveData _mainSave;
         private SaveContainer _globalData;
-        private SaveContainer _activeProfileData;
+        private SaveContainer _activeProfile;
 
         public ISave Global => GetGlobalData();
-        public ISave Profile => GetCurentProfileData();
+        public ISave Profile => GetCurentProfile();
 
-        public string ActiveProfileName
+        public string ProfileName
         {
             get => GetActiveProfileName();
             private set => MainSave.ProfileName = value;
@@ -35,11 +35,7 @@ namespace SaveSystem.Internal
         {
             _profileDatas = new();
             _settings = settings;
-
-            if (Application.isEditor)
-                _saveLoader = new ScriptableDataSaveLoader(_settings);
-            else
-                _saveLoader = new JsonDataSaveLoader(_settings);
+            _saveLoader = new(settings);
         }
 
         public void SaveAll()
@@ -76,25 +72,25 @@ namespace SaveSystem.Internal
             _saveLoader.ClearData(SaveSystemConstants.GLOBAL_DATA_KEY);
         }
 
-        public void SetProfile(string profileName)
+        public void SwitchProfile(string profileName)
         {
-            if (ActiveProfileName.Equals(profileName)) return;
+            if (ProfileName.Equals(profileName)) return;
 
-            ActiveProfileName = profileName;
-            _activeProfileData = GetProfileDataInternal(profileName);
+            ProfileName = profileName;
+            _activeProfile = GetProfileDataInternal(profileName);
         }
 
-        public ISave GetCurentProfileData()
+        public ISave GetCurentProfile()
         {
-            if (_activeProfileData == null)
+            if (_activeProfile == null)
             {
-                return GetProfileDataInternal(ActiveProfileName);
+                return GetProfileDataInternal(ProfileName);
             }
 
-            return _activeProfileData;
+            return _activeProfile;
         }
 
-        public ISave GetProfileData(string profileName) => GetProfileDataInternal(profileName);
+        public ISave GetProfile(string profileName) => GetProfileDataInternal(profileName);
 
         public ISave CreateProfile(string profileName)
         {
@@ -108,7 +104,7 @@ namespace SaveSystem.Internal
         }
 
 
-        public void ClearActiveProfile() => ClearProfile(ActiveProfileName);
+        public void ClearProfile() => ClearProfile(ProfileName);
         public void ClearProfile(string profileName)
         {
             if (_profileDatas.ContainsKey(profileName))

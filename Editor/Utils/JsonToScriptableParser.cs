@@ -23,7 +23,7 @@ namespace SaveSystem.Editor.Utils
 
                 if (result != null)
                 {
-                    dataAsset.SaveData(result);
+                    dataAsset.Data = result;
                     AssetDatabase.SaveAssetIfDirty(dataAsset);
 
                     UnityEngine.Debug.Log($"Successfully loaded data from {Path.GetFileName(pathToFile)}");

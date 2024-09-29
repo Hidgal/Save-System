@@ -8,14 +8,17 @@ namespace SaveSystem.Internal.Data
         [SerializeField]
         private SaveContainer _saveData;
         
-        public SaveContainer Data => _saveData;
-
-        public void SaveData(SaveContainer data)
+        public SaveContainer Data
         {
-            _saveData = data;
+            get => _saveData;
+            set
+            {
+                _saveData = value;
 #if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(this); 
+                UnityEditor.EditorUtility.SetDirty(this);
+                UnityEditor.AssetDatabase.SaveAssetIfDirty(this);
 #endif
+            }
         }
     } 
 }
