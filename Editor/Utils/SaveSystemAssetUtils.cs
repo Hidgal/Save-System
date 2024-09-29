@@ -1,13 +1,12 @@
-#if UNITY_EDITOR
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using SaveSystem.Internal;
 using SaveSystem.Misc;
-using SaveSystem.Zenject;
 using UnityEditor;
 using UnityEngine;
 
-namespace SaveSystem.Utils.Editor
+namespace SaveSystem.Editor.Utils
 {
     public static class SaveSystemAssetUtils
     {
@@ -33,7 +32,7 @@ namespace SaveSystem.Utils.Editor
         public static SaveSystemSettings GetSettings()
         {
             //TODO: braching based on defines
-            var settingsAsset = GetAsset<SaveSystemInstaller>();
+            var settingsAsset = GetAsset<SaveSystemSettingsAsset>();
 
             if (settingsAsset)
                 return settingsAsset.Settings;
@@ -71,4 +70,3 @@ namespace SaveSystem.Utils.Editor
         }
     }
 } 
-#endif

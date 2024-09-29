@@ -5,18 +5,18 @@ using UnityEngine;
 namespace SaveSystem.Editor.Inspector
 {
     [CustomPropertyDrawer(typeof(SerializableDictionary<string, string>))]
-    public class StringStringDictionaryDrawer : SerializableDictionaryCustomDrawer { }
+    internal class StringStringDictionaryDrawer : SerializableDictionaryCustomDrawer { }
 
     [CustomPropertyDrawer(typeof(SerializableDictionary<string, float>))]
-    public class StringFloatDictionaryDrawer : SerializableDictionaryCustomDrawer { }
+    internal class StringFloatDictionaryDrawer : SerializableDictionaryCustomDrawer { }
 
     [CustomPropertyDrawer(typeof(SerializableDictionary<string, int>))]
-    public class StringIntDictionaryDrawer : SerializableDictionaryCustomDrawer { }
+    internal class StringIntDictionaryDrawer : SerializableDictionaryCustomDrawer { }
 
     [CustomPropertyDrawer(typeof(SerializableDictionary<string, bool>))]
-    public class StringBoolDictionaryDrawer : SerializableDictionaryCustomDrawer { }
+    internal class StringBoolDictionaryDrawer : SerializableDictionaryCustomDrawer { }
 
-    public abstract class SerializableDictionaryCustomDrawer : PropertyDrawer
+    internal abstract class SerializableDictionaryCustomDrawer : PropertyDrawer
     {
         private const float KEYS_SECTION_PERCENT = 0.35f;
         private const float VALUES_SECTION_PERCENT = 1 - KEYS_SECTION_PERCENT;

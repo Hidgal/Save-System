@@ -8,7 +8,7 @@ namespace SaveSystem.Internal.SaveLoaders
 {
     internal class JsonDataSaveLoader : DataSaveLoader
     {
-        private readonly JsonParser _parser;
+        private readonly SaveSystemJsonParser _parser;
 
         public JsonDataSaveLoader(SaveSystemSettings settings) : base(settings)
         {

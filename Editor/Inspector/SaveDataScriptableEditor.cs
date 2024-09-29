@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEditor;
-using SaveSystem.Scriptables;
-using SaveSystem.Utils.Editor;
+using SaveSystem.Editor.Utils;
 
 namespace SaveSystem.Editor.Inspector
 {

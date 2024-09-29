@@ -1,13 +1,12 @@
 #if UNITY_EDITOR
 using System.IO;
-using SaveSystem.Internal;
 using UnityEditor;
 
-namespace SaveSystem.Utils.Editor
+namespace SaveSystem.Editor.Utils
 {
     internal static class EditorSavesCleaner
     {
-        [MenuItem(SaveSystemConstants.MENU_ITEM_NAME + "Clear All Saves")]
+        [MenuItem(SaveSystemEditorConstants.MENU_ITEM_NAME + "Clear All Saves")]
         public static void ClearAllSaves()
         {
             var settings = SaveSystemAssetUtils.GetSettings();

@@ -1,12 +1,10 @@
 using System;
-using System.Globalization;
-using System.Text;
 using SaveSystem.Misc;
 using UnityEngine;
 
 namespace SaveSystem.Utils
 {
-    public class JsonParser
+    public class SaveSystemJsonParser
     {
         private const string DATA_HEADER = "SaveData\n";
 
@@ -14,7 +12,7 @@ namespace SaveSystem.Utils
 
         private bool _useEncryption => _settings.UseEncryption;
 
-        public JsonParser(SaveSystemSettings settings)
+        public SaveSystemJsonParser(SaveSystemSettings settings)
         {
             _settings = settings;
         }
@@ -29,11 +27,11 @@ namespace SaveSystem.Utils
 
             if (_useEncryption)
             {
-                result = EncryptionSystem.Encrypt(_settings.EncryptionKey, _settings.EncryptionIv, dataString);
+                result = SaveSystemEncryption.Encrypt(_settings.EncryptionKey, _settings.EncryptionIv, dataString);
             }
             else
             {
-                result = EncryptionSystem.GetBytes(dataString);
+                result = SaveSystemEncryption.GetBytes(dataString);
             }
 
             return result;
@@ -41,11 +39,11 @@ namespace SaveSystem.Utils
 
         public T FromJson<T>(byte[] data)
         {
-            string dataString = EncryptionSystem.GetString(data);
+            string dataString = SaveSystemEncryption.GetString(data);
 
             if (!dataString.Contains(DATA_HEADER))
             {
-                dataString = EncryptionSystem.Decrypt(_settings.EncryptionKey, _settings.EncryptionIv, data);
+                dataString = SaveSystemEncryption.Decrypt(_settings.EncryptionKey, _settings.EncryptionIv, data);
             }
             
             dataString = dataString.Replace(DATA_HEADER, string.Empty);

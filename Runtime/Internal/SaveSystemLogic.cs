@@ -6,46 +6,59 @@ namespace SaveSystem.Internal
 {
     internal class SaveSystemLogic : ISaveSystem
     {
+        private readonly Dictionary<string, SaveData> _profileDatas;
+        private readonly SaveSystemSettings _settings;
+        private readonly DataSaveLoader _saveLoader;
+
+        private string _activeProfileName;
+        private SaveData _globalData;
+        private SaveData _activeProfileData;
+
         public SaveData GlobalData
         {
             get => GetGlobalData();
         }
 
-        public string ActiveProfileName
-        {
-            get
-            {
-                if (GlobalData.HasStringValue(SaveSystemConstants.PROFILE_KEY))
-                {
-                    return GlobalData.GetStringValue(SaveSystemConstants.PROFILE_KEY);
-                }
-                else
-                {
-                    GlobalData.SetStringValue(SaveSystemConstants.PROFILE_KEY, _settings.DefaultProfileName);
-                    return _settings.DefaultProfileName;
-                }
-            }
+        //TODO: profile switch logic rework
+        public string ActiveProfileName => _activeProfileName;
+        //{
+        //    get
+        //    {
+        //        if (GlobalData.HasStringValue(SaveSystemConstants.PROFILE_KEY))
+        //        {
+        //            return GlobalData.GetStringValue(SaveSystemConstants.PROFILE_KEY);
+        //        }
+        //        else
+        //        {
+        //            GlobalData.SetStringValue(SaveSystemConstants.PROFILE_KEY, _settings.DefaultProfileName);
+        //            return _settings.DefaultProfileName;
+        //        }
+        //    }
 
-            private set
-            {
-                GlobalData.SetStringValue(SaveSystemConstants.PROFILE_KEY, value);
-            }
-        }
+        //    private set
+        //    {
+        //        GlobalData.SetStringValue(SaveSystemConstants.PROFILE_KEY, value);
+        //    }
+        //}
 
         public SaveData ProfileData => GetCurentProfileData();
 
-        private Dictionary<string, SaveData> _profileDatas;
-        private DataSaveLoader _saveLoader;
-        private SaveSystemSettings _settings;
-        
-        private SaveData _globalData;
-        private SaveData _activeProfileData;
+
 
         public SaveSystemLogic(SaveSystemSettings settings)
         {
             _profileDatas = new();
             _settings = settings;
             CreateDataSaveLoader(settings);
+
+#if UNITY_EDITOR
+            _saveLoader = new ScriptableDataSaveLoader(settings);
+            return;
+#endif
+
+#pragma warning disable CS0162
+            _saveLoader = new JsonDataSaveLoader(settings);
+#pragma warning restore CS0162
         }
 
         public void SaveAll()
@@ -86,7 +99,7 @@ namespace SaveSystem.Internal
         {
             if (ActiveProfileName.Equals(profileName)) return;
 
-            ActiveProfileName = profileName;
+            _activeProfileName = profileName;
             _activeProfileData = GetProfileData(profileName);
         }
 
@@ -158,15 +171,7 @@ namespace SaveSystem.Internal
 
         private void CreateDataSaveLoader(SaveSystemSettings settings)
         {
-#if UNITY_EDITOR
-            if (settings.UseScriptableSavesInEditor)
-            {
-                _saveLoader = new ScriptableDataSaveLoader(settings);
-                return;
-            }
-#endif
 
-            _saveLoader = new JsonDataSaveLoader(settings);
         }
     }
 }

@@ -8,7 +8,6 @@ namespace SaveSystem.Misc
     public class SaveSystemSettings
     {
 #if UNITY_EDITOR
-        public bool UseScriptableSavesInEditor => _useScriptableSavesInEditor;
         /// <summary>
         /// Editor only! Full path to saves folder including path to project
         /// </summary>
@@ -34,9 +33,6 @@ namespace SaveSystem.Misc
 
 
 #if UNITY_EDITOR
-        [Header("Scriptable Saves Settings")]
-        [SerializeField]
-        private bool _useScriptableSavesInEditor = true;
         [SerializeField]
         [Tooltip("Relative to the Assets folder")]
         private string _scriptableSavesPath = "Saves";
@@ -69,11 +65,11 @@ namespace SaveSystem.Misc
 
         public void GenerateKeys(bool useDefault = true)
         {
-            string keyReference = useDefault ? EncryptionSystem.DEFAULT_KEY : Application.productName;
-            string ivReference = useDefault ? EncryptionSystem.DEFAULT_IV : Application.companyName;
+            string keyReference = useDefault ? SaveSystemEncryption.DEFAULT_KEY : Application.productName;
+            string ivReference = useDefault ? SaveSystemEncryption.DEFAULT_IV : Application.companyName;
 
-            EncryptionSystem.GenerateKey(ref _encryptionKey, 32, keyReference);
-            EncryptionSystem.GenerateKey(ref _encryptionIv, 16, ivReference);
+            SaveSystemEncryption.GenerateKey(ref _encryptionKey, 32, keyReference);
+            SaveSystemEncryption.GenerateKey(ref _encryptionIv, 16, ivReference);
         }
     }
 }

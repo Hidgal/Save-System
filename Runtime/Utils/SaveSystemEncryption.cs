@@ -3,7 +3,7 @@ using System.Text;
 
 namespace SaveSystem.Utils
 {
-    internal static class EncryptionSystem
+    internal static class SaveSystemEncryption
     {
         internal const string DEFAULT_KEY = "Save system default key reference";
         internal const string DEFAULT_IV = "Default IV reference";

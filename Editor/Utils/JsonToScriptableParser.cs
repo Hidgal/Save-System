@@ -1,10 +1,9 @@
-#if UNITY_EDITOR
 using System.IO;
+using SaveSystem.Utils;
 using SaveSystem.Internal;
-using SaveSystem.Scriptables;
 using UnityEditor;
 
-namespace SaveSystem.Utils.Editor
+namespace SaveSystem.Editor.Utils
 {
     public static class JsonToScriptableParser
     {
@@ -18,7 +17,7 @@ namespace SaveSystem.Utils.Editor
                 var fileData = File.ReadAllBytes(pathToFile);
                 var settings = SaveSystemAssetUtils.GetSettings();
 
-                var parser = new JsonParser(settings);
+                var parser = new SaveSystemJsonParser(settings);
                 var result = parser.FromJson<SaveData>(fileData);
 
                 if (result != null)
@@ -40,10 +39,9 @@ namespace SaveSystem.Utils.Editor
             if (pathToFile.Equals(string.Empty)) return;
 
             var settings = SaveSystemAssetUtils.GetSettings();
-            var parser = new JsonParser(settings);
+            var parser = new SaveSystemJsonParser(settings);
             var result = parser.ToJson(dataAsset.Data);
             File.WriteAllBytes(pathToFile, result);
         }
     }
 }
-#endif
