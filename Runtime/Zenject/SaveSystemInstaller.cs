@@ -1,4 +1,6 @@
+#if ZENJECT_INSTALLED
 using SaveSystem.Internal;
+using SaveSystem.Internal.Settings;
 using UnityEngine;
 using Zenject;
 
@@ -16,4 +18,4 @@ namespace SaveSystem.Zenject
         }
     }
 }
-
+#endif

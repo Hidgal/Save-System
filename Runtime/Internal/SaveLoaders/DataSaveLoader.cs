@@ -1,5 +1,6 @@
 using System.IO;
-using SaveSystem.Misc;
+using SaveSystem.Internal.Data;
+using SaveSystem.Internal.Settings;
 
 namespace SaveSystem.Internal.SaveLoaders
 {
@@ -12,8 +13,8 @@ namespace SaveSystem.Internal.SaveLoaders
             Settings = settings;
         }
 
-        internal abstract SaveData LoadData(string key);
-        internal abstract void SaveData(string key, SaveData data);
+        internal abstract SaveContainer LoadData(string key);
+        internal abstract void SaveData(string key, SaveContainer data);
         internal abstract void ClearData(string key);
 
         protected virtual void CreateFolderIfNotExists(string folderPath)

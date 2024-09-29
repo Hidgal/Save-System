@@ -1,23 +1,22 @@
 using System.Collections.Generic;
+using SaveSystem.Internal.Data;
 using SaveSystem.Internal.SaveLoaders;
-using SaveSystem.Misc;
+using SaveSystem.Internal.Settings;
 
 namespace SaveSystem.Internal
 {
     internal class SaveSystemLogic : ISaveSystem
     {
-        private readonly Dictionary<string, SaveData> _profileDatas;
+        private readonly Dictionary<string, SaveContainer> _profileDatas;
         private readonly SaveSystemSettings _settings;
         private readonly DataSaveLoader _saveLoader;
 
         private string _activeProfileName;
-        private SaveData _globalData;
-        private SaveData _activeProfileData;
+        private SaveContainer _globalData;
+        private SaveContainer _activeProfileData;
 
-        public SaveData GlobalData
-        {
-            get => GetGlobalData();
-        }
+        public ISave Global => GetGlobalData();
+        public ISave Profile => GetCurentProfileData();
 
         //TODO: profile switch logic rework
         public string ActiveProfileName => _activeProfileName;
@@ -41,15 +40,10 @@ namespace SaveSystem.Internal
         //    }
         //}
 
-        public SaveData ProfileData => GetCurentProfileData();
-
-
-
         public SaveSystemLogic(SaveSystemSettings settings)
         {
             _profileDatas = new();
             _settings = settings;
-            CreateDataSaveLoader(settings);
 
 #if UNITY_EDITOR
             _saveLoader = new ScriptableDataSaveLoader(settings);
@@ -100,29 +94,22 @@ namespace SaveSystem.Internal
             if (ActiveProfileName.Equals(profileName)) return;
 
             _activeProfileName = profileName;
-            _activeProfileData = GetProfileData(profileName);
+            _activeProfileData = GetProfileDataInternal(profileName);
         }
 
-        public SaveData GetCurentProfileData()
+        public ISave GetCurentProfileData()
         {
             if(_activeProfileData == null)
             {
-                return GetProfileData(ActiveProfileName);
+                return GetProfileDataInternal(ActiveProfileName);
             }
 
             return _activeProfileData;
         }
-        public SaveData GetProfileData(string profileName)
-        {
-            if (_profileDatas.ContainsKey(profileName))
-            {
-                return _profileDatas[profileName];
-            }
 
-            return CreateProfileInternal(profileName);
-        }
+        public ISave GetProfileData(string profileName) => GetProfileDataInternal(profileName);
 
-        public SaveData CreateProfile(string profileName)
+        public ISave CreateProfile(string profileName)
         {
             if (_profileDatas.ContainsKey(profileName))
             {
@@ -132,15 +119,7 @@ namespace SaveSystem.Internal
 
             return CreateProfileInternal(profileName);
         }
-        private SaveData CreateProfileInternal(string profileName)
-        {
-            var data = _saveLoader.LoadData(profileName);
-            _profileDatas.Add(profileName, data);
 
-            InitializeData(_profileDatas[profileName], profileName);
-
-            return _profileDatas[profileName];
-        }
 
         public void ClearActiveProfile() => ClearProfile(ActiveProfileName);
         public void ClearProfile(string profileName)
@@ -153,7 +132,8 @@ namespace SaveSystem.Internal
             _saveLoader.ClearData(profileName);
         }
 
-        private SaveData GetGlobalData()
+
+        private ISave GetGlobalData()
         {
             if (_globalData == null)
             {
@@ -164,14 +144,28 @@ namespace SaveSystem.Internal
             return _globalData;
         }
 
-        private void InitializeData(SaveData data, string key)
+        private SaveContainer GetProfileDataInternal(string profileName)
         {
-            data.Initialize(() => _saveLoader.SaveData(key, data), () => _saveLoader.ClearData(key));
+            if (_profileDatas.ContainsKey(profileName))
+            {
+                return _profileDatas[profileName];
+            }
+
+            return CreateProfileInternal(profileName);
+        }
+        private SaveContainer CreateProfileInternal(string profileName)
+        {
+            var data = _saveLoader.LoadData(profileName);
+            _profileDatas.Add(profileName, data);
+
+            InitializeData(_profileDatas[profileName], profileName);
+
+            return _profileDatas[profileName];
         }
 
-        private void CreateDataSaveLoader(SaveSystemSettings settings)
+        private void InitializeData(SaveContainer data, string key)
         {
-
+            data.Initialize(() => _saveLoader.SaveData(key, data), () => _saveLoader.ClearData(key));
         }
     }
 }

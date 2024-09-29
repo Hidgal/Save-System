@@ -1,11 +1,11 @@
-namespace SaveSystem.Internal
+namespace SaveSystem
 {
     public interface ISaveSystem
     {
         /// <summary>
         /// Global saved data. Doesn`t depend on the active profile
         /// </summary>
-        SaveData GlobalData { get; }
+        ISave Global { get; }
 
         /// <summary>
         /// Name of currently selected profile
@@ -15,12 +15,12 @@ namespace SaveSystem.Internal
         /// <summary>
         /// Data of currently selected profile
         /// </summary>
-        SaveData ProfileData { get; }
+        ISave Profile { get; }
 
         /// <summary>
         /// Data of currently selected profile
         /// </summary>
-        SaveData GetCurentProfileData();
+        ISave GetCurentProfileData();
 
 
 
@@ -28,14 +28,14 @@ namespace SaveSystem.Internal
         /// Returns data for profile with nameed as <paramref name="profileName"/>. 
         /// Returns new data if there`s no data in save files.
         /// </summary>
-        SaveData GetProfileData(string profileName);
+        ISave GetProfileData(string profileName);
 
         /// <summary>
         /// Creates new profile names as <paramref name="profileName"/>
         /// </summary>
         /// <param name="profileName"></param>
         /// <returns></returns>
-        SaveData CreateProfile(string profileName);
+        ISave CreateProfile(string profileName);
 
         /// <summary>
         /// Switch active profile to <paramref name="profileName"/>. If there`s no such profile, creates new.

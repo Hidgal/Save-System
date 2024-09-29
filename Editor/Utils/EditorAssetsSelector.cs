@@ -1,5 +1,4 @@
-#if UNITY_EDITOR
-using SaveSystem.Internal;
+using SaveSystem.Internal.Settings;
 using UnityEditor;
 
 namespace SaveSystem.Editor.Utils
@@ -20,4 +19,3 @@ namespace SaveSystem.Editor.Utils
         }
     }
 } 
-#endif

@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SaveSystem.Utils
+namespace SaveSystem.Dictionary
 {
     [System.Serializable]
     public class DictionaryData<K, V>

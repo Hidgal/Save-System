@@ -1,8 +1,8 @@
 using System;
-using SaveSystem.Misc;
+using SaveSystem.Internal.Settings;
 using UnityEngine;
 
-namespace SaveSystem.Utils
+namespace SaveSystem.Internal.Utils
 {
     public class SaveSystemJsonParser
     {

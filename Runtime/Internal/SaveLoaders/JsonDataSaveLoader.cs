@@ -1,7 +1,8 @@
 using System;
 using System.IO;
-using SaveSystem.Misc;
-using SaveSystem.Utils;
+using SaveSystem.Internal.Data;
+using SaveSystem.Internal.Settings;
+using SaveSystem.Internal.Utils;
 using UnityEngine;
 
 namespace SaveSystem.Internal.SaveLoaders
@@ -15,11 +16,11 @@ namespace SaveSystem.Internal.SaveLoaders
             _parser = new(settings);
         }
 
-        internal override SaveData LoadData(string key)
+        internal override SaveContainer LoadData(string key)
         {
             var pathToFile = Path.Combine(Settings.JsonSavePath, key + SaveSystemConstants.FILE_EXTENSION);
 
-            SaveData data;
+            SaveContainer data;
 
             CreateFolderIfNotExists(Settings.JsonSavePath);
 
@@ -34,7 +35,7 @@ namespace SaveSystem.Internal.SaveLoaders
 
                 try
                 {
-                    data = _parser.FromJson<SaveData>(json);
+                    data = _parser.FromJson<SaveContainer>(json);
                 }
                 catch (Exception ex)
                 {
@@ -46,7 +47,7 @@ namespace SaveSystem.Internal.SaveLoaders
             return data;
         }
 
-        internal override void SaveData(string key, SaveData data)
+        internal override void SaveData(string key, SaveContainer data)
         {
             CreateFolderIfNotExists(Settings.JsonSavePath);
 

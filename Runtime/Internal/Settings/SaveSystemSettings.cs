@@ -1,8 +1,8 @@
 using System.IO;
-using SaveSystem.Utils;
+using SaveSystem.Internal.Utils;
 using UnityEngine;
 
-namespace SaveSystem.Misc
+namespace SaveSystem.Internal.Settings
 {
     [System.Serializable]
     public class SaveSystemSettings

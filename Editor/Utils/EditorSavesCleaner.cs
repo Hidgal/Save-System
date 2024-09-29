@@ -1,4 +1,3 @@
-#if UNITY_EDITOR
 using System.IO;
 using UnityEditor;
 
@@ -48,4 +47,3 @@ namespace SaveSystem.Editor.Utils
         }
     }
 }
-#endif

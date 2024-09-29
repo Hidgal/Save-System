@@ -1,21 +1,10 @@
-using SaveSystem.Utils;
+using SaveSystem.Dictionary;
 using UnityEditor;
 using UnityEngine;
 
 namespace SaveSystem.Editor.Inspector
 {
-    [CustomPropertyDrawer(typeof(SerializableDictionary<string, string>))]
-    internal class StringStringDictionaryDrawer : SerializableDictionaryCustomDrawer { }
-
-    [CustomPropertyDrawer(typeof(SerializableDictionary<string, float>))]
-    internal class StringFloatDictionaryDrawer : SerializableDictionaryCustomDrawer { }
-
-    [CustomPropertyDrawer(typeof(SerializableDictionary<string, int>))]
-    internal class StringIntDictionaryDrawer : SerializableDictionaryCustomDrawer { }
-
-    [CustomPropertyDrawer(typeof(SerializableDictionary<string, bool>))]
-    internal class StringBoolDictionaryDrawer : SerializableDictionaryCustomDrawer { }
-
+    [CustomPropertyDrawer(typeof(SerializableDictionary<,>))]
     internal abstract class SerializableDictionaryCustomDrawer : PropertyDrawer
     {
         private const float KEYS_SECTION_PERCENT = 0.35f;

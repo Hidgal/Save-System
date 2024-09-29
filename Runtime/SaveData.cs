@@ -3,7 +3,7 @@ using System;
 namespace SaveSystem
 {
     [Serializable]
-    public class SaveableData
+    public class SaveData
     {
         internal Action SaveAction;
 

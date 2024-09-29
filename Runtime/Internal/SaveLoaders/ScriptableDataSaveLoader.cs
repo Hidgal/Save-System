@@ -1,7 +1,11 @@
 using System.IO;
-using SaveSystem.Misc;
-using UnityEditor;
 using UnityEngine;
+using SaveSystem.Internal.Data;
+using SaveSystem.Internal.Settings;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace SaveSystem.Internal.SaveLoaders
 {
@@ -14,7 +18,7 @@ namespace SaveSystem.Internal.SaveLoaders
         {
         }
 
-        internal override SaveData LoadData(string key)
+        internal override SaveContainer LoadData(string key)
         {
             var dataAsset = GetOrCreateDataAsset(Settings.ScriptableSavesRelativePath, key);
 
@@ -32,7 +36,7 @@ namespace SaveSystem.Internal.SaveLoaders
             return default;
         }
 
-        internal override void SaveData(string key, SaveData data)
+        internal override void SaveData(string key, SaveContainer data)
         {
             var dataAsset = GetOrCreateDataAsset(Settings.ScriptableSavesRelativePath, key);
             dataAsset.SaveData(data);
@@ -45,7 +49,7 @@ namespace SaveSystem.Internal.SaveLoaders
             if (AssetDatabase.IsValidFolder(folderPath))
             {
                 var assetPath = Path.Combine(folderPath, key + ASSET_EXTENSION);
-                var dataAsset = AssetDatabase.LoadAssetAtPath<SaveDataScriptable>(assetPath);
+                var dataAsset = AssetDatabase.LoadAssetAtPath<SaveContainerScriptable>(assetPath);
 
                 if (dataAsset)
                 {
@@ -54,19 +58,19 @@ namespace SaveSystem.Internal.SaveLoaders
             }
         }
 
-        private SaveDataScriptable GetOrCreateDataAsset(string folderPath, string assetName)
+        private SaveContainerScriptable GetOrCreateDataAsset(string folderPath, string assetName)
         {
             CreateFolderIfNotExists(folderPath);
 
             var assetPath = Path.Combine(folderPath, assetName + ASSET_EXTENSION);
-            var dataAsset = AssetDatabase.LoadAssetAtPath<SaveDataScriptable>(assetPath);
+            var dataAsset = AssetDatabase.LoadAssetAtPath<SaveContainerScriptable>(assetPath);
             if (!dataAsset)
             {
-                var scriptableInstance = ScriptableObject.CreateInstance<SaveDataScriptable>();
+                var scriptableInstance = ScriptableObject.CreateInstance<SaveContainerScriptable>();
                 AssetDatabase.CreateAsset(scriptableInstance, assetPath);
                 AssetDatabase.SaveAssets();
 
-                dataAsset = AssetDatabase.LoadAssetAtPath<SaveDataScriptable>(assetPath);
+                dataAsset = AssetDatabase.LoadAssetAtPath<SaveContainerScriptable>(assetPath);
             }
 
             return dataAsset;

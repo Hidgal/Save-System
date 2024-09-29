@@ -1,13 +1,14 @@
 using System.IO;
-using SaveSystem.Utils;
+using SaveSystem.Internal.Utils;
 using SaveSystem.Internal;
 using UnityEditor;
+using SaveSystem.Internal.Data;
 
 namespace SaveSystem.Editor.Utils
 {
     public static class JsonToScriptableParser
     {
-        public static void ImportDataFromJson(SaveDataScriptable dataAsset)
+        public static void ImportDataFromJson(SaveContainerScriptable dataAsset)
         {
             if (!dataAsset) return;
 
@@ -18,7 +19,7 @@ namespace SaveSystem.Editor.Utils
                 var settings = SaveSystemAssetUtils.GetSettings();
 
                 var parser = new SaveSystemJsonParser(settings);
-                var result = parser.FromJson<SaveData>(fileData);
+                var result = parser.FromJson<SaveContainer>(fileData);
 
                 if (result != null)
                 {
@@ -30,7 +31,7 @@ namespace SaveSystem.Editor.Utils
             }
         }
 
-        public static void ExportDataToJson(SaveDataScriptable dataAsset)
+        public static void ExportDataToJson(SaveContainerScriptable dataAsset)
         {
             if (!dataAsset) return;
 

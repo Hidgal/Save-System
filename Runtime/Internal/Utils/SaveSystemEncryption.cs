@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace SaveSystem.Utils
+namespace SaveSystem.Internal.Utils
 {
     internal static class SaveSystemEncryption
     {

@@ -1,7 +1,6 @@
-using SaveSystem.Misc;
 using UnityEngine;
 
-namespace SaveSystem.Internal
+namespace SaveSystem.Internal.Settings
 {
     [CreateAssetMenu(menuName = "Save System/Settings Asset", fileName = "Save System Settings Asset")]
     public class SaveSystemSettingsAsset : ScriptableObject

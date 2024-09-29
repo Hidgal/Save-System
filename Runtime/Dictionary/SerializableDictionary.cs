@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 
-namespace SaveSystem.Utils
+namespace SaveSystem.Dictionary
 {
     /// <summary>
     /// Dictionary that can serialize keys and values
