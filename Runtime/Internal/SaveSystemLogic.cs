@@ -2,57 +2,44 @@ using System.Collections.Generic;
 using SaveSystem.Internal.Data;
 using SaveSystem.Internal.SaveLoaders;
 using SaveSystem.Internal.Settings;
+using UnityEngine;
 
 namespace SaveSystem.Internal
 {
-    internal class SaveSystemLogic : ISaveSystem
+    public class SaveSystemLogic : ISaveSystem
     {
         private readonly Dictionary<string, SaveContainer> _profileDatas;
         private readonly SaveSystemSettings _settings;
         private readonly DataSaveLoader _saveLoader;
 
-        private string _activeProfileName;
+        private SaveSystemSaveData _mainSave;
         private SaveContainer _globalData;
         private SaveContainer _activeProfileData;
 
         public ISave Global => GetGlobalData();
         public ISave Profile => GetCurentProfileData();
 
-        //TODO: profile switch logic rework
-        public string ActiveProfileName => _activeProfileName;
-        //{
-        //    get
-        //    {
-        //        if (GlobalData.HasStringValue(SaveSystemConstants.PROFILE_KEY))
-        //        {
-        //            return GlobalData.GetStringValue(SaveSystemConstants.PROFILE_KEY);
-        //        }
-        //        else
-        //        {
-        //            GlobalData.SetStringValue(SaveSystemConstants.PROFILE_KEY, _settings.DefaultProfileName);
-        //            return _settings.DefaultProfileName;
-        //        }
-        //    }
+        public string ActiveProfileName
+        {
+            get => GetActiveProfileName();
+            private set => MainSave.ProfileName = value;
+        }
 
-        //    private set
-        //    {
-        //        GlobalData.SetStringValue(SaveSystemConstants.PROFILE_KEY, value);
-        //    }
-        //}
+        internal SaveSystemSaveData MainSave
+        {
+            get => GetMainSave();
+        }
+
 
         public SaveSystemLogic(SaveSystemSettings settings)
         {
             _profileDatas = new();
             _settings = settings;
 
-#if UNITY_EDITOR
-            _saveLoader = new ScriptableDataSaveLoader(settings);
-            return;
-#endif
-
-#pragma warning disable CS0162
-            _saveLoader = new JsonDataSaveLoader(settings);
-#pragma warning restore CS0162
+            if (Application.isEditor)
+                _saveLoader = new ScriptableDataSaveLoader(_settings);
+            else
+                _saveLoader = new JsonDataSaveLoader(_settings);
         }
 
         public void SaveAll()
@@ -93,13 +80,13 @@ namespace SaveSystem.Internal
         {
             if (ActiveProfileName.Equals(profileName)) return;
 
-            _activeProfileName = profileName;
+            ActiveProfileName = profileName;
             _activeProfileData = GetProfileDataInternal(profileName);
         }
 
         public ISave GetCurentProfileData()
         {
-            if(_activeProfileData == null)
+            if (_activeProfileData == null)
             {
                 return GetProfileDataInternal(ActiveProfileName);
             }
@@ -161,6 +148,22 @@ namespace SaveSystem.Internal
             InitializeData(_profileDatas[profileName], profileName);
 
             return _profileDatas[profileName];
+        }
+
+        private string GetActiveProfileName()
+        {
+            if (string.IsNullOrEmpty(MainSave.ProfileName))
+                return _settings.DefaultProfileName;
+
+            return MainSave.ProfileName;
+        }
+
+        private SaveSystemSaveData GetMainSave()
+        {
+            if (_mainSave == null)
+                _mainSave = Global.Get<SaveSystemSaveData>();
+
+            return _mainSave;
         }
 
         private void InitializeData(SaveContainer data, string key)
