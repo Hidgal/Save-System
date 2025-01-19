@@ -11,8 +11,10 @@ namespace SaveSystem.Scriptables
 
         internal virtual void SaveData(T data)
         {
+#if UNITY_EDITOR
             _saveData = data;
-            UnityEditor.EditorUtility.SetDirty(this);
+            UnityEditor.EditorUtility.SetDirty(this); 
+#endif
         }
     }
 }
